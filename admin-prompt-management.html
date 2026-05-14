@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>提示词管理 - AI变现平台</title>
+    <title>提示词管理 - 塔猴管理后台</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -53,6 +53,45 @@
                 background-color: rgba(99, 102, 241, 0.1);
                 border-left: 4px solid #6366F1;
             }
+            .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 44px;
+                height: 24px;
+            }
+            .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .toggle-slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .3s;
+                border-radius: 24px;
+            }
+            .toggle-slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .3s;
+                border-radius: 50%;
+            }
+            input:checked + .toggle-slider {
+                background-color: #10B981;
+            }
+            input:checked + .toggle-slider:before {
+                transform: translateX(20px);
+            }
         }
     </style>
 </head>
@@ -63,7 +102,7 @@
             <!-- 品牌标志 -->
             <div class="flex items-center space-x-2">
                 <i class="fa fa-bolt text-primary text-3xl"></i>
-                <h1 class="text-2xl font-bold text-primary">AI变现平台</h1>
+                <h1 class="text-2xl font-bold text-primary">塔猴管理后台</h1>
             </div>
             
             <!-- 中间搜索栏 -->
@@ -107,125 +146,83 @@
 
     <!-- 主内容区域 -->
     <main class="flex flex-1">
-        <!-- 侧边栏导航 -->
-        <aside class="w-64 bg-white shadow-md h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
-            <nav class="py-4">
-                <div class="px-4 mt-4 mb-4">
-                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">配置中心</h2>
-                </div>
-                <ul class="space-y-1">
-                    <li>
-                        <a href="admin-prompt-management.html" class="flex items-center px-4 py-3 text-primary sidebar-active">
-                            <i class="fa fa-comment w-6"></i>
-                            <span>提示词管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-parameter-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i class="fa fa-sliders w-6"></i>
-                            <span>参数管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-model-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i class="fa fa-cube w-6"></i>
-                            <span>模型管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-style-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i class="fa fa-paint-brush w-6"></i>
-                            <span>风格管理</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
+
 
         <!-- 内容区域 -->
-        <div class="flex-1 p-6 overflow-y-auto">
-            <!-- 面包屑导航 -->
-            <div class="text-sm text-gray-500 mb-4">
-                <a href="#" class="hover:text-primary">首页</a> &gt; 
-                <a href="#" class="hover:text-primary">配置中心</a> &gt; 
-                <span class="text-primary">提示词管理</span>
-            </div>
+        <div class="flex-1 flex flex-col overflow-hidden">
             
-            <!-- 页面标题和操作按钮 -->
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h1 class="text-2xl font-bold mb-1">提示词管理</h1>
-
+            <!-- 上部：查询和操作区域 -->
+            <div class="p-6 pb-0">
+                <!-- 页面标题 -->
+                <div class="mb-4">
+                    <h1 class="text-2xl font-bold">提示词管理</h1>
                 </div>
-                <div class="flex space-x-3">
-                    <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center">
-                        <i class="fa fa-download mr-2"></i>
-                        导出
-                    </button>
-                    <button id="categoryManagementBtn" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center">
-                        <i class="fa fa-tags mr-2"></i>
-                        分类管理
-                    </button>
-                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center">
-                        <i class="fa fa-plus mr-2"></i>
-                        新建提示词
-                    </button>
-                </div>
-            </div>
-            
-            <!-- 搜索和筛选区域 -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <div class="md:col-span-2">
-                        <div class="relative">
-                            <input type="text" placeholder="搜索提示词名称、关键词" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                
+                <!-- 搜索和筛选区域 -->
+                <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="md:col-span-2">
+                            <div class="relative">
+                                <input type="text" placeholder="搜索提示词名称、关键词" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option>全部频道</option>
+                                <option>短剧</option>
+                                <option>音乐</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option>全部分类</option>
+                                <option>环境</option>
+                                <option>角色</option>
+                                <option>剧本</option>
+                                <option>风格</option>
+                                <option>歌词</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option>全部</option>
+                                <option>已启用</option>
+                                <option>已停用</option>
+                            </select>
                         </div>
                     </div>
-                    <div>
-                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                            <option>全部频道</option>
-                            <option>短剧</option>
-                            <option>音乐</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                            <option>全部分类</option>
-                            <option>环境</option>
-                            <option>角色</option>
-                            <option>剧本</option>
-                            <option>风格</option>
-                            <option>歌词</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                            <option>全部</option>
-                            <option>已启用</option>
-                            <option>已停用</option>
-                        </select>
-                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                            <option>适用工具</option>
-                            <option>AI短剧生成</option>
-                            <option>AI音乐生成</option>
-                            <option>AI图像生成</option>
-                        </select>
+                
+                <!-- 操作按钮 -->
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex space-x-3">
+                        <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center">
+                            <i class="fa fa-download mr-2"></i>
+                            导出
+                        </button>
+                        <button id="categoryManagementBtn" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center">
+                            <i class="fa fa-tags mr-2"></i>
+                            分类管理
+                        </button>
                     </div>
-                    <div class="flex justify-end space-x-3">
+                    <div class="flex space-x-3">
                         <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
                             重置
                         </button>
                         <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
                             搜索
                         </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center">
+                            <i class="fa fa-plus mr-2"></i>
+                            添加提示词
+                        </button>
                     </div>
                 </div>
             </div>
+            
+            <!-- 下部：列表内容区域 -->
+            <div class="flex-1 p-6 pt-2 overflow-y-auto">
             
             <!-- 提示词表格 -->
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
@@ -241,11 +238,10 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提示词内容</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">频道</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">适用工具</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     <div class="flex items-center">
-                                        调用次数
+                                        使用次数
                                         <div class="ml-2 flex flex-col">
                                             <button class="text-gray-400 hover:text-gray-600">
                                                 <i class="fa fa-chevron-up text-xs"></i>
@@ -283,13 +279,11 @@
                                         剧本
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI短剧生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        已启用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     3,842
@@ -302,9 +296,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-gray-600 hover:text-gray-800">
-                                            <i class="fa fa-ban"></i>
-                                            <span class="ml-1">停用</span>
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -330,13 +328,11 @@
                                         剧本
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI短剧生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        已启用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2,617
@@ -349,9 +345,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-gray-600 hover:text-gray-800">
-                                            <i class="fa fa-ban"></i>
-                                            <span class="ml-1">停用</span>
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -377,13 +377,11 @@
                                         剧本
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI短剧生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        已启用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     4,109
@@ -396,9 +394,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-gray-600 hover:text-gray-800">
-                                            <i class="fa fa-ban"></i>
-                                            <span class="ml-1">停用</span>
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -424,13 +426,11 @@
                                         风格
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI音乐生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        已停用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     0
@@ -450,6 +450,10 @@
                                         <button class="text-danger hover:text-danger/80">
                                             <i class="fa fa-trash"></i>
                                             <span class="ml-1">删除</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -475,13 +479,11 @@
                                         歌词
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI音乐生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        已启用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     1,873
@@ -494,9 +496,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-gray-600 hover:text-gray-800">
-                                            <i class="fa fa-ban"></i>
-                                            <span class="ml-1">停用</span>
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -522,13 +528,11 @@
                                         环境
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI短剧生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        已启用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     1,234
@@ -541,9 +545,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-gray-600 hover:text-gray-800">
-                                            <i class="fa fa-ban"></i>
-                                            <span class="ml-1">停用</span>
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -569,13 +577,11 @@
                                         角色
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    AI短剧生成
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        已启用
-                                    </span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     987
@@ -588,9 +594,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-gray-600 hover:text-gray-800">
-                                            <i class="fa fa-ban"></i>
-                                            <span class="ml-1">停用</span>
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-secondary hover:text-secondary/80 debug-btn">
+                                            <i class="fa fa-bug"></i>
+                                            <span class="ml-1">调试</span>
                                         </button>
                                     </div>
                                 </td>
@@ -644,11 +654,11 @@
                 </div>
             </div>
             
-            <!-- 新建提示词侧边弹窗 -->
+            <!-- 添加提示词侧边弹窗 -->
             <div id="addPromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
                 <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-bold">新建提示词</h3>
+                        <h3 class="text-xl font-bold">添加提示词</h3>
                         <button id="cancelAddPrompt" class="text-gray-500 hover:text-gray-700">
                             <i class="fa fa-times text-xl"></i>
                         </button>
@@ -677,23 +687,8 @@
                                 </select>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">适用工具</label>
-                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                    <option>AI短剧生成</option>
-                                    <option>AI音乐生成</option>
-                                    <option>AI图像生成</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">提示词内容</label>
                                 <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="4" placeholder="请输入提示词内容"></textarea>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
-                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                    <option>已启用</option>
-                                    <option>已停用</option>
-                                </select>
                             </div>
                         </form>
                     </div>
@@ -965,14 +960,6 @@
                                 </select>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">适用工具</label>
-                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                    <option>AI短剧生成</option>
-                                    <option selected>AI音乐生成</option>
-                                    <option>AI图像生成</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">提示词内容</label>
                                 <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="4">详细描述音乐的风格、节奏、情绪和 instrumentation，帮助AI生成符合特定氛围的音乐作品。</textarea>
                             </div>
@@ -1016,14 +1003,153 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 状态变更确认弹窗 -->
+            <div id="statusChangeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-xl shadow-lg w-full max-w-md">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold">确认状态变更</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4" id="statusChangeMessage">您确定要变更这个提示词的状态吗？</p>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelStatusChange" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button id="confirmStatusChange" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            确认
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 调试侧边弹窗 -->
+            <div id="debugPromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">提示词调试</h3>
+                        <button id="cancelDebugPrompt" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-lg mb-3">当前提示词</h4>
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <p class="text-sm text-gray-600 mb-2"><strong>提示词ID：</strong><span id="debugPromptId">PROMPT_001</span></p>
+                                <p class="text-sm text-gray-600 mb-2"><strong>名称：</strong><span id="debugPromptName">短剧开头生成</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-lg mb-3">调试参数</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">选择模型</label>
+                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option>GPT-3.5-turbo</option>
+                                        <option>GPT-4</option>
+                                        <option>Claude-3</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Temperature</label>
+                                    <input type="number" step="0.1" min="0" max="2" value="0.7" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Tokens</label>
+                                    <input type="number" min="1" max="4000" value="1000" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">测试输入</label>
+                                    <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" placeholder="请输入测试内容..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-lg mb-3">调试操作</h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-play mr-2"></i>
+                                    执行调试
+                                </button>
+                                <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-stop mr-2"></i>
+                                    停止执行
+                                </button>
+                                <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-refresh mr-2"></i>
+                                    重置参数
+                                </button>
+                                <button id="debugHistoryBtn" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-history mr-2"></i>
+                                    历史记录
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="debugOutputPanel">
+                            <h4 class="font-semibold text-lg mb-3">输出结果</h4>
+                            <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm min-h-32">
+                                <p>// 调试结果将在这里显示...</p>
+                            </div>
+                        </div>
+                        
+                        <div id="debugHistoryPanel" class="hidden">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-semibold text-lg">调试历史记录</h4>
+                                <button id="closeHistoryBtn" class="text-sm text-primary hover:text-primary/80">
+                                    <i class="fa fa-arrow-left mr-1"></i>返回调试
+                                </button>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-primary cursor-pointer transition-all">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="text-sm font-medium">2026-05-14 15:30:22</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">成功</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">模型：GPT-3.5-turbo | Temperature: 0.7</p>
+                                    <p class="text-xs text-gray-500 truncate">输入：测试一个短剧开头的生成效果...</p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-primary cursor-pointer transition-all">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="text-sm font-medium">2026-05-13 10:15:45</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">成功</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">模型：GPT-4 | Temperature: 0.9</p>
+                                    <p class="text-xs text-gray-500 truncate">输入：一个悬疑剧的开头场景...</p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-primary cursor-pointer transition-all">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="text-sm font-medium">2026-05-12 16:45:33</span>
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">失败</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">模型：Claude-3 | Temperature: 0.5</p>
+                                    <p class="text-xs text-gray-500 truncate">输入：请求超时，请稍后重试...</p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-primary cursor-pointer transition-all">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="text-sm font-medium">2026-05-10 09:22:18</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">成功</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">模型：GPT-3.5-turbo | Temperature: 1.0</p>
+                                    <p class="text-xs text-gray-500 truncate">输入：喜剧角色对话场景测试...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     
     <!-- JavaScript -->
     <script>
-        // 新建提示词按钮点击事件
+        // 添加提示词按钮点击事件
         document.querySelectorAll('button').forEach(function(button) {
-            if (button.textContent.trim() === '新建提示词') {
+            if (button.textContent.trim() === '添加提示词') {
                 button.addEventListener('click', function() {
                     document.getElementById('addPromptModal').classList.remove('hidden');
                 });
@@ -1116,6 +1242,103 @@
             if (e.target === this) {
                 this.classList.add('hidden');
             }
+        });
+        
+        // 状态变更相关变量
+        let pendingStatusToggle = null;
+        
+        // 状态变更确认函数
+        function confirmStatusChange(checkbox) {
+            pendingStatusToggle = checkbox;
+            const newStatus = checkbox.checked ? '启用' : '停用';
+            document.getElementById('statusChangeMessage').textContent = `您确定要${newStatus}这个提示词吗？`;
+            document.getElementById('statusChangeModal').classList.remove('hidden');
+            return false;
+        }
+        
+        // 取消状态变更
+        document.getElementById('cancelStatusChange').addEventListener('click', function() {
+            if (pendingStatusToggle) {
+                pendingStatusToggle.checked = !pendingStatusToggle.checked;
+                pendingStatusToggle = null;
+            }
+            document.getElementById('statusChangeModal').classList.add('hidden');
+        });
+        
+        // 确认状态变更
+        document.getElementById('confirmStatusChange').addEventListener('click', function() {
+            pendingStatusToggle = null;
+            document.getElementById('statusChangeModal').classList.add('hidden');
+            alert('状态已更新');
+        });
+        
+        // 点击状态变更模态框外部关闭
+        document.getElementById('statusChangeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                if (pendingStatusToggle) {
+                    pendingStatusToggle.checked = !pendingStatusToggle.checked;
+                    pendingStatusToggle = null;
+                }
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 给所有开关按钮添加事件监听
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.toggle-switch input').forEach(function(checkbox) {
+                checkbox.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    confirmStatusChange(this);
+                });
+            });
+            
+            // 调试按钮点击事件
+            document.querySelectorAll('.debug-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const promptId = row.querySelectorAll('td')[1].textContent.trim();
+                    const promptName = row.querySelectorAll('td')[2].textContent.trim();
+                    document.getElementById('debugPromptId').textContent = promptId;
+                    document.getElementById('debugPromptName').textContent = promptName;
+                    document.getElementById('debugPromptModal').classList.remove('hidden');
+                });
+            });
+        });
+        
+        // 取消调试按钮点击事件
+        document.getElementById('cancelDebugPrompt').addEventListener('click', function() {
+            document.getElementById('debugPromptModal').classList.add('hidden');
+        });
+        
+        // 点击调试模态框外部关闭
+        document.getElementById('debugPromptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                document.getElementById('debugOutputPanel').classList.remove('hidden');
+                document.getElementById('debugHistoryPanel').classList.add('hidden');
+            }
+        });
+        
+        // 历史记录按钮切换
+        document.getElementById('debugHistoryBtn').addEventListener('click', function() {
+            document.getElementById('debugOutputPanel').classList.add('hidden');
+            document.getElementById('debugHistoryPanel').classList.remove('hidden');
+        });
+        
+        // 返回调试按钮
+        document.getElementById('closeHistoryBtn').addEventListener('click', function() {
+            document.getElementById('debugHistoryPanel').classList.add('hidden');
+            document.getElementById('debugOutputPanel').classList.remove('hidden');
+        });
+        
+        // 点击历史记录项可以查看详情
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('#debugHistoryPanel .bg-gray-50').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    const time = this.querySelector('.text-sm.font-medium').textContent;
+                    alert('查看 ' + time + ' 的调试记录详情');
+                });
+            });
         });
     </script>
 </body>

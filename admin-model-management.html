@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>模型管理 - AI变现平台</title>
+    <title>模型管理 - 塔猴管理后台</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -188,7 +188,7 @@
             <!-- 品牌标志 -->
             <div class="flex items-center space-x-2">
                 <i class="fa fa-bolt text-primary text-3xl"></i>
-                <h1 class="text-2xl font-bold text-primary">AI变现平台</h1>
+                <h1 class="text-2xl font-bold text-primary">塔猴管理后台</h1>
             </div>
             
             <!-- 中间搜索栏 -->
@@ -232,50 +232,8 @@
 
     <!-- 主内容区域 -->
     <main class="flex flex-1">
-        <!-- 侧边栏导航 -->
-        <aside class="w-64 bg-white shadow-md h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
-            <nav class="py-4">
-                <div class="px-4 mt-4 mb-4">
-                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">配置中心</h2>
-                </div>
-                <ul class="space-y-1">
-                    <li>
-                        <a href="admin-prompt-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i class="fa fa-comment w-6"></i>
-                            <span>提示词管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-parameter-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i class="fa fa-sliders w-6"></i>
-                            <span>参数管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-model-management.html" class="flex items-center px-4 py-3 text-primary sidebar-active">
-                            <i class="fa fa-cube w-6"></i>
-                            <span>模型管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-style-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i class="fa fa-paint-brush w-6"></i>
-                            <span>风格管理</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-
         <!-- 内容区域 -->
         <div class="flex-1 p-6 overflow-y-auto">
-            <!-- 面包屑导航 -->
-            <div class="text-sm text-gray-500 mb-4">
-                <a href="#" class="hover:text-primary">首页</a> &gt; 
-                <a href="#" class="hover:text-primary">配置中心</a> &gt; 
-                <span class="text-primary">模型管理</span>
-            </div>
-            
             <!-- 页面标题和操作按钮 -->
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -331,41 +289,35 @@
                         <thead class="bg-gray-50">
                             <tr>
 
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('name')">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     模型名称
-                                    <i class="fa fa-sort ml-1"></i>
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">模态</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('provider')">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     供应商
-                                    <i class="fa fa-sort ml-1"></i>
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">版本</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('status')">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     状态
-                                    <i class="fa fa-sort ml-1"></i>
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">工具</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">定价（点数/秒）</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('usedQuota')">
-                                    本月调用额度
-                                    <i class="fa fa-sort ml-1"></i>
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('remainingQuota')">
-                                    本月剩余额度
+                                    调用次数
                                     <i class="fa fa-sort ml-1"></i>
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('updateTime')">
                                     更新时间
                                     <i class="fa fa-sort ml-1"></i>
                                 </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr class="table-row-hover" data-name="GPT-4" data-provider="OpenAI" data-status="启用" data-used-quota="12543" data-remaining-quota="87457" data-update-time="2026-01-10 14:22">
+                            <tr class="table-row-hover" data-name="GPT-4" data-provider="OpenAI" data-status="启用" data-used-quota="12543" data-update-time="2026-01-10 14:22">
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('GPT-4')">GPT-4</div>
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('GPT-4', 'view')">GPT-4</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
@@ -381,40 +333,27 @@
                                     v1.0
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <label class="relative inline-flex items-center cursor-pointer">
+                                    <label class="relative inline-flex items-center cursor-pointer model-status-toggle" data-model="GPT-4" data-current-status="启用">
                                         <input type="checkbox" class="sr-only peer" checked>
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                         <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
                                     </label>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-wrap gap-2">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            <i class="fa fa-comments mr-1"></i>
-                                            AI对话工具
-                                        </span>
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            <i class="fa fa-file-text mr-1"></i>
-                                            内容生成工具
-                                        </span>
-                                    </div>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    0.5 点数/秒
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     12,543
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-500 mb-1">87,457</div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">87% 剩余</div>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2026-01-10 14:22
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    张三
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('GPT-4')">
+                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('GPT-4', 'edit')">
                                             <i class="fa fa-edit"></i>
                                             <span class="ml-1">编辑</span>
                                         </button>
@@ -425,10 +364,10 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="table-row-hover" data-name="Stable Diffusion XL" data-provider="Stability AI" data-status="启用" data-used-quota="8765" data-remaining-quota="41235" data-update-time="2026-01-08 09:25">
+                            <tr class="table-row-hover" data-name="Stable Diffusion XL" data-provider="Stability AI" data-status="启用" data-used-quota="8765" data-update-time="2026-01-08 09:25">
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('Stable Diffusion XL')">Stable Diffusion XL</div>
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('Stable Diffusion XL', 'view')">Stable Diffusion XL</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
@@ -447,40 +386,27 @@
                                     v1.0
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <label class="relative inline-flex items-center cursor-pointer">
+                                    <label class="relative inline-flex items-center cursor-pointer model-status-toggle" data-model="Stable Diffusion XL" data-current-status="启用">
                                         <input type="checkbox" class="sr-only peer" checked>
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                         <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
                                     </label>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-wrap gap-2">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            <i class="fa fa-image mr-1"></i>
-                                            图像生成工具
-                                        </span>
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                            <i class="fa fa-video-camera mr-1"></i>
-                                            视频生成工具
-                                        </span>
-                                    </div>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    0.8 点数/秒
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     8,765
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-500 mb-1">41,235</div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: 82%"></div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">82% 剩余</div>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2026-01-08 09:25
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    李四
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('Stable Diffusion XL')">
+                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('Stable Diffusion XL', 'edit')">
                                             <i class="fa fa-edit"></i>
                                             <span class="ml-1">编辑</span>
                                         </button>
@@ -491,10 +417,10 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="table-row-hover" data-name="MusicGen" data-provider="Meta" data-status="启用" data-used-quota="4321" data-remaining-quota="25679" data-update-time="2026-01-05 16:47">
+                            <tr class="table-row-hover" data-name="MusicGen" data-provider="Meta" data-status="启用" data-used-quota="4321" data-update-time="2026-01-05 16:47">
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('MusicGen')">MusicGen</div>
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('MusicGen', 'view')">MusicGen</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
@@ -510,36 +436,27 @@
                                     v1.0
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <label class="relative inline-flex items-center cursor-pointer">
+                                    <label class="relative inline-flex items-center cursor-pointer model-status-toggle" data-model="MusicGen" data-current-status="启用">
                                         <input type="checkbox" class="sr-only peer" checked>
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                         <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
                                     </label>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-wrap gap-2">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                            <i class="fa fa-music mr-1"></i>
-                                            音乐生成工具
-                                        </span>
-                                    </div>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    0.3 点数/秒
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     4,321
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-500 mb-1">25,679</div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">85% 剩余</div>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2026-01-05 16:47
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    王五
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('MusicGen')">
+                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('MusicGen', 'edit')">
                                             <i class="fa fa-edit"></i>
                                             <span class="ml-1">编辑</span>
                                         </button>
@@ -550,10 +467,10 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="table-row-hover" data-name="GPT-3.5" data-provider="OpenAI" data-status="已停用" data-used-quota="2156" data-remaining-quota="47844" data-update-time="2026-01-01 10:15">
+                            <tr class="table-row-hover" data-name="GPT-3.5" data-provider="OpenAI" data-status="已停用" data-used-quota="2156" data-update-time="2026-01-01 10:15">
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('GPT-3.5')">GPT-3.5</div>
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('GPT-3.5', 'view')">GPT-3.5</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
@@ -569,36 +486,27 @@
                                     v1.0
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <label class="relative inline-flex items-center cursor-pointer">
+                                    <label class="relative inline-flex items-center cursor-pointer model-status-toggle" data-model="GPT-3.5" data-current-status="已停用">
                                         <input type="checkbox" class="sr-only peer">
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                         <span class="ml-3 text-sm font-medium text-gray-700">已停用</span>
                                     </label>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-wrap gap-2">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            <i class="fa fa-comments mr-1"></i>
-                                            AI对话工具
-                                        </span>
-                                    </div>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    0.2 点数/秒
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2,156
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-500 mb-1">47,844</div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">95% 剩余</div>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2026-01-01 10:15
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    赵六
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('GPT-3.5')">
+                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('GPT-3.5', 'edit')">
                                             <i class="fa fa-edit"></i>
                                             <span class="ml-1">编辑</span>
                                         </button>
@@ -609,10 +517,10 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="table-row-hover" data-name="DALL-E 3" data-provider="OpenAI" data-status="已停用" data-used-quota="1876" data-remaining-quota="18124" data-update-time="2025-12-28 14:30">
+                            <tr class="table-row-hover" data-name="DALL-E 3" data-provider="OpenAI" data-status="已停用" data-used-quota="1876" data-update-time="2025-12-28 14:30">
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('DALL-E 3')">DALL-E 3</div>
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openModelDetails('DALL-E 3', 'view')">DALL-E 3</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
@@ -628,36 +536,27 @@
                                     v1.0
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <label class="relative inline-flex items-center cursor-pointer">
+                                    <label class="relative inline-flex items-center cursor-pointer model-status-toggle" data-model="DALL-E 3" data-current-status="已停用">
                                         <input type="checkbox" class="sr-only peer">
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                         <span class="ml-3 text-sm font-medium text-gray-700">已停用</span>
                                     </label>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-wrap gap-2">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            <i class="fa fa-image mr-1"></i>
-                                            图像生成工具
-                                        </span>
-                                    </div>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    0.6 点数/秒
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     1,876
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-500 mb-1">18,124</div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">90% 剩余</div>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     2025-12-28 14:30
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    张三
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('DALL-E 3')">
+                                        <button class="text-primary hover:text-primary/80 btn-hover" onclick="openModelDetails('DALL-E 3', 'edit')">
                                             <i class="fa fa-edit"></i>
                                             <span class="ml-1">编辑</span>
                                         </button>
@@ -812,51 +711,16 @@
                         </div>
                     </div>
                     
-                    <!-- 工具信息 -->
+                    <!-- 定价信息 -->
                     <div>
-                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">工具</h4>
-                        <div class="bg-gray-50 rounded-lg p-4" id="modelDetailsTools">
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">AI对话工具</span>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                    </label>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">定价信息</h4>
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">消耗点数：</span>
+                                <div class="flex items-center">
+                                    <input type="number" id="modelDetailsPricing" value="0.5" step="0.1" min="0" class="w-24 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                                    <span class="ml-2 text-sm text-gray-500">点数/秒</span>
                                 </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">内容生成工具</span>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 额度信息 -->
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">额度信息</h4>
-                        <div class="bg-gray-50 rounded-lg p-4 space-y-4">
-                            <div>
-                                <div class="flex justify-between mb-1">
-                                    <span class="text-gray-600">本月调用额度：</span>
-                                    <span class="font-medium" id="modelDetailsUsedQuota">12,543</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-primary h-2 rounded-full" style="width: 13%" id="modelDetailsUsedBar"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between mb-1">
-                                    <span class="text-gray-600">本月剩余额度：</span>
-                                    <span class="font-medium" id="modelDetailsRemainingQuota">87,457</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-primary h-2 rounded-full" style="width: 87%" id="modelDetailsRemainingBar"></div>
-                                </div>
-                                <div class="text-xs text-gray-500 mt-1" id="modelDetailsRemainingPercent">87% 剩余</div>
                             </div>
                         </div>
                     </div>
@@ -899,13 +763,21 @@
             
             <!-- 侧边栏底部 -->
             <div class="p-6 border-t border-gray-200">
-                <div class="flex space-x-3">
-                    <button class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover">
+                <div class="flex space-x-3" id="modelDetailsButtonsView">
+                    <button class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover hidden">
                             <i class="fa fa-edit mr-2"></i>编辑
                         </button>
-                        <button class="flex-1 bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover">
+                        <button class="flex-1 bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover hidden">
                             <i class="fa fa-refresh mr-2"></i>同步
                         </button>
+                </div>
+                <div class="flex space-x-3 hidden" id="modelDetailsButtonsEdit">
+                    <button class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover" onclick="closeModelDetails()">
+                        <i class="fa fa-times mr-2"></i>取消
+                    </button>
+                    <button class="flex-1 bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-all-300 btn-hover">
+                        <i class="fa fa-save mr-2"></i>保存
+                    </button>
                 </div>
             </div>
         </div>
@@ -959,10 +831,23 @@
         });
         
         // 模型详情侧边栏功能
-        function openModelDetails(modelName) {
+        function openModelDetails(modelName, mode) {
             // 打开侧边栏
             document.getElementById('modelDetailsSidebar').classList.remove('translate-x-full');
             document.getElementById('modelDetailsOverlay').classList.remove('hidden');
+            
+            // 根据模式切换UI
+            if (mode === 'edit') {
+                document.getElementById('modelDetailsButtonsView').classList.add('hidden');
+                document.getElementById('modelDetailsButtonsEdit').classList.remove('hidden');
+                document.getElementById('modelDetailsPricing').disabled = false;
+                document.getElementById('modelDetailsPricing').classList.remove('bg-gray-100');
+            } else {
+                document.getElementById('modelDetailsButtonsView').classList.add('hidden');
+                document.getElementById('modelDetailsButtonsEdit').classList.add('hidden');
+                document.getElementById('modelDetailsPricing').disabled = true;
+                document.getElementById('modelDetailsPricing').classList.add('bg-gray-100');
+            }
             
             // 根据模型名称更新详情
             updateModelDetails(modelName);
@@ -994,14 +879,8 @@
                     modalities: [
                         { name: '文本', class: 'bg-blue-100 text-blue-800' }
                     ],
-                    tools: [
-                        { name: 'AI对话工具', enabled: true },
-                        { name: '内容生成工具', enabled: true }
-                    ],
-                    usedQuota: '12,543',
-                    remainingQuota: '87,457',
-                    usedPercent: 13,
-                    remainingPercent: 87
+                    pricing: 0.5,
+                    usedQuota: '12,543'
                 },
                 'Stable Diffusion XL': {
                     name: 'Stable Diffusion XL',
@@ -1013,14 +892,8 @@
                         { name: '图像', class: 'bg-yellow-100 text-yellow-800' },
                         { name: '视频', class: 'bg-red-100 text-red-800' }
                     ],
-                    tools: [
-                        { name: '图像生成工具', enabled: true },
-                        { name: '视频生成工具', enabled: true }
-                    ],
-                    usedQuota: '8,765',
-                    remainingQuota: '41,235',
-                    usedPercent: 17,
-                    remainingPercent: 82
+                    pricing: 0.8,
+                    usedQuota: '8,765'
                 },
                 'MusicGen': {
                     name: 'MusicGen',
@@ -1031,13 +904,8 @@
                     modalities: [
                         { name: '音频', class: 'bg-purple-100 text-purple-800' }
                     ],
-                    tools: [
-                        { name: '音乐生成工具', enabled: true }
-                    ],
-                    usedQuota: '4,321',
-                    remainingQuota: '25,679',
-                    usedPercent: 15,
-                    remainingPercent: 85
+                    pricing: 0.3,
+                    usedQuota: '4,321'
                 },
                 'GPT-3.5': {
                     name: 'GPT-3.5',
@@ -1048,13 +916,8 @@
                     modalities: [
                         { name: '文本', class: 'bg-blue-100 text-blue-800' }
                     ],
-                    tools: [
-                        { name: 'AI对话工具', enabled: false }
-                    ],
-                    usedQuota: '2,156',
-                    remainingQuota: '47,844',
-                    usedPercent: 4,
-                    remainingPercent: 95
+                    pricing: 0.2,
+                    usedQuota: '2,156'
                 },
                 'DALL-E 3': {
                     name: 'DALL-E 3',
@@ -1065,13 +928,8 @@
                     modalities: [
                         { name: '图像', class: 'bg-yellow-100 text-yellow-800' }
                     ],
-                    tools: [
-                        { name: '图像生成工具', enabled: false }
-                    ],
-                    usedQuota: '1,876',
-                    remainingQuota: '18,124',
-                    usedPercent: 9,
-                    remainingPercent: 90
+                    pricing: 0.6,
+                    usedQuota: '1,876'
                 }
             };
             
@@ -1100,30 +958,85 @@
                 });
                 document.getElementById('modelDetailsModalities').innerHTML = modalitiesHtml;
                 
-                // 更新工具信息
-                let toolsHtml = '';
-                if (data.tools) {
-                    data.tools.forEach(tool => {
-                        toolsHtml += `
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">${tool.name}</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" ${tool.enabled ? 'checked' : ''}>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                </label>
-                            </div>
-                        `;
-                    });
-                }
-                document.getElementById('modelDetailsTools').innerHTML = toolsHtml;
-                
-                // 更新额度信息
-                document.getElementById('modelDetailsUsedQuota').textContent = data.usedQuota;
-                document.getElementById('modelDetailsRemainingQuota').textContent = data.remainingQuota;
-                document.getElementById('modelDetailsUsedBar').style.width = `${data.usedPercent}%`;
-                document.getElementById('modelDetailsRemainingBar').style.width = `${data.remainingPercent}%`;
-                document.getElementById('modelDetailsRemainingPercent').textContent = `${data.remainingPercent}% 剩余`;
+                // 更新定价
+                document.getElementById('modelDetailsPricing').value = data.pricing;
             }
+        }
+        
+        // 更新定价
+        function updatePricing(modelName, value) {
+            console.log(`更新模型 ${modelName} 的定价为: ${value} 点数/秒`);
+        }
+        
+        // 模型状态变更二次确认
+        let pendingStatusModel = null;
+        let pendingCheckbox = null;
+        
+        // 绑定状态切换事件
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.model-status-toggle').forEach(function(label) {
+                const checkbox = label.querySelector('input[type="checkbox"]');
+                
+                checkbox.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const modelName = label.dataset.model;
+                    const currentStatus = label.dataset.currentStatus;
+                    const newStatus = currentStatus === '启用' ? '已停用' : '启用';
+                    
+                    pendingStatusModel = {
+                        name: modelName,
+                        label: label,
+                        currentStatus: currentStatus,
+                        newStatus: newStatus
+                    };
+                    pendingCheckbox = checkbox;
+                    
+                    // 更新确认弹窗中的模型名并显示
+                    if (newStatus === '已停用') {
+                        document.querySelector('#deactivateModelModal p.text-sm').textContent = `模型：${modelName}`;
+                        document.getElementById('deactivateModelModal').classList.remove('hidden');
+                    } else {
+                        document.querySelector('#activateModelModal p.text-sm').textContent = `模型：${modelName}`;
+                        document.getElementById('activateModelModal').classList.remove('hidden');
+                    }
+                });
+            });
+            
+            // 确认停用按钮
+            const deactivateModal = document.getElementById('deactivateModelModal');
+            deactivateModal.querySelectorAll('button')[1].addEventListener('click', function() {
+                if (pendingStatusModel) {
+                    applyStatusChange(pendingStatusModel, false);
+                    deactivateModal.classList.add('hidden');
+                }
+            });
+            
+            // 确认启用按钮
+            const activateModal = document.getElementById('activateModelModal');
+            activateModal.querySelectorAll('button')[1].addEventListener('click', function() {
+                if (pendingStatusModel) {
+                    applyStatusChange(pendingStatusModel, true);
+                    activateModal.classList.add('hidden');
+                }
+            });
+        });
+        
+        function applyStatusChange(modelData, isChecked) {
+            const label = modelData.label;
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            const statusText = label.querySelector('span.ml-3');
+            
+            checkbox.checked = isChecked;
+            label.dataset.currentStatus = modelData.newStatus;
+            label.closest('tr').dataset.status = modelData.newStatus;
+            
+            if (statusText) {
+                statusText.textContent = modelData.newStatus;
+            }
+            
+            pendingStatusModel = null;
+            pendingCheckbox = null;
         }
         
 
@@ -1162,10 +1075,6 @@
                     case 'usedQuota':
                         aValue = parseInt(a.dataset.usedQuota);
                         bValue = parseInt(b.dataset.usedQuota);
-                        break;
-                    case 'remainingQuota':
-                        aValue = parseInt(a.dataset.remainingQuota);
-                        bValue = parseInt(b.dataset.remainingQuota);
                         break;
                     case 'updateTime':
                         aValue = new Date(a.dataset.updateTime);
