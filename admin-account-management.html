@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户管理 - 管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366F1',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .sidebar-active {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-left: 4px solid #6366F1;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 3px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-dark min-h-screen flex flex-col">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bolt text-primary text-3xl"></i>
+                <h1 class="text-2xl font-bold text-primary">管理后台</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-all-300">
+                        <i class="fa fa-bell-o text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20admin%20avatar%20modern%20style&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover">
+                        <span class="font-medium">管理员</span>
+                        <i class="fa fa-caret-down text-gray-600"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-user mr-2"></i>个人资料
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-cog mr-2"></i>账户设置
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors text-danger">
+                            <i class="fa fa-sign-out mr-2"></i>退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex flex-1">
+        <aside class="w-64 bg-white shadow-md h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
+            <nav class="py-4">
+                <div class="px-4 mb-4">
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">账户管理</h2>
+                </div>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#account" class="flex items-center px-4 py-3 text-primary sidebar-active">
+                            <i class="fa fa-wallet w-6"></i>
+                            <span>账户管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#review" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-check-circle w-6"></i>
+                            <span>审核规则配置</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#users" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-users w-6"></i>
+                            <span>用户管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#billing" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-credit-card w-6"></i>
+                            <span>计费管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#analytics" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-bar-chart w-6"></i>
+                            <span>数据分析</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#settings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-cog w-6"></i>
+                            <span>系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div id="account">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold">账户管理</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-primary to-primary/70 rounded-xl p-6 text-white">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-medium">平台账户总额</h3>
+                            <button class="text-white/80 hover:text-white transition-colors">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                        </div>
+                        <div class="text-3xl font-bold mb-4">¥ 12,888,000.00</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>待分账账户总额：</span>
+                                <span>¥ 1,887.40</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>营销账户总额：</span>
+                                <span>¥ 1,887.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>收入账户总额：</span>
+                                <span>¥ 1,887.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-md">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-medium text-gray-800">易宝支付账户总额</h3>
+                            <button class="text-gray-500 hover:text-gray-700 transition-colors">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-800 mb-4">¥ 123,888,000.00</div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex justify-between">
+                                <span>待分账账户总额：</span>
+                                <span>¥ 1,897.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>营销账户总额：</span>
+                                <span>¥ 1,887.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>收入账户总额：</span>
+                                <span>¥ 1,887.00</span>
+                            </div>
+                        </div>
+                        <button class="mt-4 w-full bg-primary/10 text-primary py-2 rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">
+                            对账
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-md">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-medium text-gray-800">mailbook账户总额</h3>
+                            <button class="text-gray-500 hover:text-gray-700 transition-colors">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-800 mb-4">¥ 0.00</div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex justify-between">
+                                <span>待分账账户总额：</span>
+                                <span>¥ 0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>营销账户总额：</span>
+                                <span>¥ 0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>收入账户总额：</span>
+                                <span>¥ 0.00</span>
+                            </div>
+                        </div>
+                        <button class="mt-4 w-full bg-primary/10 text-primary py-2 rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">
+                            对账
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 border-b">
+                        <div class="flex space-x-4 mb-4">
+                            <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">充值记录表</button>
+                            <button class="px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary">分账周期记录表</button>
+                            <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">分账明细表</button>
+                            <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">转账记录表</button>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">分账单号</span>
+                                <input type="text" placeholder="请输入分账单号" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-48">
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">确认状态</span>
+                                <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-32">
+                                    <option>全部</option>
+                                    <option>待确认</option>
+                                    <option>部分确认</option>
+                                    <option>全部确认</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">分账状态</span>
+                                <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-32">
+                                    <option>全部</option>
+                                    <option>未完成</option>
+                                    <option>已完成</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">开始日期</span>
+                                <input type="date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            </div>
+                            <span class="text-gray-400">~</span>
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">结束日期</span>
+                                <input type="date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            </div>
+                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium">查询</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">分账周期</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">分账单号</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">订单数</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">分账商户数</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600">订单总金额</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600">营销金额</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600">手续费金额</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600">分账总金额</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600">商户应收金额</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600">平台应收金额</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">申请时间</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">分账时间</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">确认状态</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">分账状态</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm text-gray-700">2026年1月1日-1月31日</td>
+                                    <td class="px-4 py-3 text-sm text-primary font-medium">1346897675413</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥600.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥30.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥5.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥565.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥395.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥169.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">待确认</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未完成</td>
+                                    <td class="px-4 py-3">
+                                        <button class="open-settlement-modal text-primary hover:text-primary/80 text-sm" onclick="openSettlementModal()">分账确认单</button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm text-gray-700">2026年1月1日-1月31日</td>
+                                    <td class="px-4 py-3 text-sm text-primary font-medium">1346897675413</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥600.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥30.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥5.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥565.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥395.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥169.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">部分确认</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未完成</td>
+                                    <td class="px-4 py-3">
+                                        <button class="open-settlement-modal text-primary hover:text-primary/80 text-sm" onclick="openSettlementModal()">分账确认单</button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm text-gray-700">2026年1月1日-1月31日</td>
+                                    <td class="px-4 py-3 text-sm text-primary font-medium">1346897675413</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥600.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥30.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥5.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥565.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥395.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥169.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">部分确认</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未完成</td>
+                                    <td class="px-4 py-3">
+                                        <button class="open-settlement-modal text-primary hover:text-primary/80 text-sm" onclick="openSettlementModal()">分账确认单</button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm text-gray-700">2026年1月1日-1月31日</td>
+                                    <td class="px-4 py-3 text-sm text-primary font-medium">1346897675413</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥600.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥30.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥5.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥565.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥395.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥169.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未确认</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未完成</td>
+                                    <td class="px-4 py-3">
+                                        <button class="open-settlement-modal text-primary hover:text-primary/80 text-sm" onclick="openSettlementModal()">分账确认单</button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm text-gray-700">2026年1月1日-1月31日</td>
+                                    <td class="px-4 py-3 text-sm text-primary font-medium">1346897675413</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥600.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥30.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥5.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥565.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥395.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥169.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未确认</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">未完成</td>
+                                    <td class="px-4 py-3">
+                                        <button class="open-settlement-modal text-primary hover:text-primary/80 text-sm" onclick="openSettlementModal()">分账确认单</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm text-gray-700">2026年1月1日-1月31日</td>
+                                    <td class="px-4 py-3 text-sm text-primary font-medium">1346897675413</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">123546</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥600.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥30.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥5.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥565.00</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥395.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 text-right">¥169.50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">2025-12-24 11:44:53</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">全部确认</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">已完成</td>
+                                    <td class="px-4 py-3">
+                                        <button class="open-settlement-modal text-primary hover:text-primary/80 text-sm" onclick="openSettlementModal()">分账确认单</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t flex items-center justify-between">
+                        <span class="text-sm text-gray-600">共 6 条记录</span>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <i class="fa fa-chevron-left text-gray-600"></i>
+                            </button>
+                            <button class="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50" disabled>
+                                <i class="fa fa-chevron-right text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="settlementModal" class="fixed inset-0 z-50 flex justify-end hidden">
+        <div class="relative w-full max-w-[90vw] max-w-5xl bg-white shadow-xl transform transition-transform duration-300 translate-x-full" id="modalContent">
+            <div class="h-full overflow-y-auto scrollbar-thin">
+                <div class="sticky top-0 bg-white border-b p-4 flex items-center justify-between z-10">
+                    <h3 class="text-lg font-semibold">分账确认单</h3>
+                    <button id="closeModalBtn" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <i class="fa fa-times text-gray-600"></i>
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
+                        <i class="fa fa-info-circle text-yellow-600 mr-3"></i>
+                        <span class="text-sm text-yellow-800">本周期内未确认的订单，将合并至下个订单进行分账</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <span class="text-sm text-gray-500">分账周期</span>
+                                <div class="text-gray-800 font-medium mt-1">2026年1月1日-1月31日</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">商户数</span>
+                                <div class="text-gray-800 font-medium mt-1">6</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">订单数</span>
+                                <div class="text-gray-800 font-medium mt-1">738 <span class="text-gray-500">(已确认238/待确认500)</span></div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">订单总金额</span>
+                                <div class="text-gray-800 font-medium mt-1">¥600.00</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">营销金额</span>
+                                <div class="text-gray-800 font-medium mt-1">¥30.00</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">手续费金额</span>
+                                <div class="text-gray-800 font-medium mt-1">¥5.00</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">分账总金额</span>
+                                <div class="text-primary font-bold text-lg mt-1">¥565.00</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">平台应收金额</span>
+                                <div class="text-gray-800 font-medium mt-1">¥169.50</div>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">商户应收金额</span>
+                                <div class="text-gray-800 font-medium mt-1">¥395.50</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">商户列表</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600">商户ID</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600">商户信息</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">订单数量</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">订单总金额</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">营销总金额</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">手续费总金额</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">实际分账总金额</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">平台抽佣比例</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">平台抽佣金额</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-600">商户应收总金额</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600">分账确认状态</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b">
+                                        <td class="px-3 py-2 text-gray-700">11</td>
+                                        <td class="px-3 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">123</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥520.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥20.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥0.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥500.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥150.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥350.00</td>
+                                        <td class="px-3 py-2 text-gray-700">全部确认</td>
+                                        <td class="px-3 py-2">-</td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="px-3 py-2 text-gray-700">11</td>
+                                        <td class="px-3 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">123</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥520.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥20.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥0.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥500.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥150.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥350.00</td>
+                                        <td class="px-3 py-2 text-gray-700">全部确认</td>
+                                        <td class="px-3 py-2">-</td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="px-3 py-2 text-gray-700">243</td>
+                                        <td class="px-3 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">123</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥520.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥20.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥0.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥500.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥150.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥350.00</td>
+                                        <td class="px-3 py-2 text-gray-700">部分确认</td>
+                                        <td class="px-3 py-2"><button class="text-primary hover:text-primary/80 text-sm">全部确认</button></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="px-3 py-2 text-gray-700">22</td>
+                                        <td class="px-3 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">123</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥520.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥20.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥0.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥500.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥150.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥350.00</td>
+                                        <td class="px-3 py-2 text-gray-700">待确认</td>
+                                        <td class="px-3 py-2"><button class="text-primary hover:text-primary/80 text-sm">全部确认</button></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="px-3 py-2 text-gray-700">22</td>
+                                        <td class="px-3 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">123</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥520.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥20.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥0.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥500.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥150.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥350.00</td>
+                                        <td class="px-3 py-2 text-gray-700">待确认</td>
+                                        <td class="px-3 py-2"><button class="text-primary hover:text-primary/80 text-sm">全部确认</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 text-gray-700">56</td>
+                                        <td class="px-3 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">123</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥520.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥20.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥0.36</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥500.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥150.00</td>
+                                        <td class="px-3 py-2 text-gray-700 text-right">¥350.00</td>
+                                        <td class="px-3 py-2 text-gray-700">待确认</td>
+                                        <td class="px-3 py-2"><button class="text-primary hover:text-primary/80 text-sm">全部确认</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">订单列表</h4>
+                        <div class="flex space-x-3 mb-4">
+                            <button class="px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm">批量确认</button>
+                            <button class="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-50 text-sm">批量导出</button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3 mb-4">
+                            <input type="text" placeholder="商户ID" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <input type="text" placeholder="商户名称" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <input type="text" placeholder="订单ID" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option>确认状态</option>
+                                <option>待确认</option>
+                                <option>已确认</option>
+                            </select>
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option>支付渠道</option>
+                                <option>易宝支付</option>
+                                <option>微信支付</option>
+                                <option>支付宝</option>
+                            </select>
+                            <input type="text" placeholder="商品ID" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <input type="text" placeholder="商品名称" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <input type="text" placeholder="手机号" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <input type="text" placeholder="用户ID" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">重置</button>
+                                <button class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm">查询</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="px-2 py-2 w-6">
+                                            <input type="checkbox" class="w-4 h-4">
+                                        </th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">订单ID</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">商品ID</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">商品名称</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">商户ID</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">商户信息</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">用户ID</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">用户信息</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">订单金额</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">营销金额</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">手续费</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">实际分账金额</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">平台抽佣比例</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">平台抽佣金额</th>
+                                        <th class="px-2 py-2 text-right font-medium text-gray-600">商户应收金额</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">支付渠道</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">支付时间</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">确认收货时间</th>
+                                        <th class="px-2 py-2 text-left font-medium text-gray-600">分账确认状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="px-2 py-2">
+                                            <input type="checkbox" class="w-4 h-4">
+                                        </td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">AI音乐MV实战从Suno深度调教到商业级音轨拆解</td>
+                                        <td class="px-2 py-2 text-gray-700">123</td>
+                                        <td class="px-2 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-2 py-2 text-gray-700">10001</td>
+                                        <td class="px-2 py-2 text-gray-700">用户昵称<br>138****1234</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥100.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥5.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥3.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥92.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥27.60</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥63.14</td>
+                                        <td class="px-2 py-2 text-gray-700">易宝支付</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-05 14:30:22</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-10 09:15:44</td>
+                                        <td class="px-2 py-2 text-gray-700">待确认</td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="px-2 py-2">
+                                            <input type="checkbox" class="w-4 h-4">
+                                        </td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">AI音乐MV实战从Suno深度调教到商业级音轨拆解</td>
+                                        <td class="px-2 py-2 text-gray-700">123</td>
+                                        <td class="px-2 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-2 py-2 text-gray-700">10002</td>
+                                        <td class="px-2 py-2 text-gray-700">用户昵称<br>139****5678</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥100.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥5.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥3.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥92.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥27.60</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥63.14</td>
+                                        <td class="px-2 py-2 text-gray-700">易宝支付</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-05 14:30:22</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-10 09:15:44</td>
+                                        <td class="px-2 py-2 text-gray-700">待确认</td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="px-2 py-2">
+                                            <input type="checkbox" class="w-4 h-4">
+                                        </td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">AI音乐MV实战从Suno深度调教到商业级音轨拆解</td>
+                                        <td class="px-2 py-2 text-gray-700">123</td>
+                                        <td class="px-2 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-2 py-2 text-gray-700">10003</td>
+                                        <td class="px-2 py-2 text-gray-700">用户昵称<br>137****9012</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥100.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥5.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥3.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥92.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥27.60</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥63.14</td>
+                                        <td class="px-2 py-2 text-gray-700">易宝支付</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-05 14:30:22</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-10 09:15:44</td>
+                                        <td class="px-2 py-2 text-gray-700">待确认</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-2 py-2">
+                                            <input type="checkbox" class="w-4 h-4">
+                                        </td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">123123123</td>
+                                        <td class="px-2 py-2 text-gray-700">AI音乐MV实战从Suno深度调教到商业级音轨拆解</td>
+                                        <td class="px-2 py-2 text-gray-700">123</td>
+                                        <td class="px-2 py-2 text-gray-700">重庆****公司<br>135****9988</td>
+                                        <td class="px-2 py-2 text-gray-700">10004</td>
+                                        <td class="px-2 py-2 text-gray-700">用户昵称<br>136****3456</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥100.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥5.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥3.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥92.00</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">30%</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥27.60</td>
+                                        <td class="px-2 py-2 text-gray-700 text-right">¥63.14</td>
+                                        <td class="px-2 py-2 text-gray-700">易宝支付</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-05 14:30:22</td>
+                                        <td class="px-2 py-2 text-gray-700">2026-01-10 09:15:44</td>
+                                        <td class="px-2 py-2 text-gray-700">待确认</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <span>共 800 条</span>
+                                <span>每页</span>
+                                <select class="px-2 py-1 border border-gray-300 rounded text-sm">
+                                    <option>10</option>
+                                    <option>20</option>
+                                    <option>50</option>
+                                </select>
+                                <span>条</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                    <i class="fa fa-chevron-left text-gray-600"></i>
+                                </button>
+                                <button class="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">4</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">5</button>
+                                <span class="text-gray-400">...</span>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">24</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fa fa-chevron-right text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t">
+                        <button id="closeModalBtn2" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium">关闭</button>
+                        <button id="confirmSettlementBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium">确认分账</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/50" id="confirmModalOverlay"></div>
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa fa-exclamation-circle text-yellow-500 text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">确认分账</h3>
+                <p class="text-gray-600 mb-6">确定要进行分账操作吗？分账后将无法撤销。</p>
+                <div class="flex justify-center space-x-3">
+                    <button id="cancelConfirmBtn" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium">取消</button>
+                    <button id="confirmConfirmBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium">确认分账</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('settlementModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const closeBtn2 = document.getElementById('closeModalBtn2');
+        const confirmSettlementBtn = document.getElementById('confirmSettlementBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalOverlay = document.getElementById('confirmModalOverlay');
+        const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+        const confirmConfirmBtn = document.getElementById('confirmConfirmBtn');
+
+        function openSettlementModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('translate-x-full');
+                modalContent.classList.add('translate-x-0');
+            }, 50);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSettlementModal() {
+            modalContent.classList.remove('translate-x-0');
+            modalContent.classList.add('translate-x-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function openConfirmModal() {
+            confirmModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeConfirmModal() {
+            confirmModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        closeBtn.addEventListener('click', closeSettlementModal);
+        closeBtn2.addEventListener('click', closeSettlementModal);
+        confirmSettlementBtn.addEventListener('click', openConfirmModal);
+        confirmModalOverlay.addEventListener('click', closeConfirmModal);
+        cancelConfirmBtn.addEventListener('click', closeConfirmModal);
+        confirmConfirmBtn.addEventListener('click', function() {
+            closeConfirmModal();
+            closeSettlementModal();
+            alert('分账操作已完成');
+        });
+    </script>
+</body>
+</html>
