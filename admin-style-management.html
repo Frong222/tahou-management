@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风格管理 - AI变现平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 自定义配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366F1',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .bg-gradient-ai {
+                background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            }
+            .bg-card-hover {
+                transition: all 0.3s ease;
+                border: 1px solid transparent;
+            }
+            .bg-card-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                border-color: rgba(99, 102, 241, 0.2);
+            }
+            .card-icon {
+                transition: all 0.3s ease;
+            }
+            .bg-card-hover:hover .card-icon {
+                transform: scale(1.1);
+            }
+            .btn-hover {
+                transition: all 0.3s ease;
+            }
+            .btn-hover:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+            .tag-hover {
+                transition: all 0.2s ease;
+            }
+            .tag-hover:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .sidebar-active {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-left: 4px solid #6366F1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-dark min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- 品牌标志 -->
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bolt text-primary text-3xl"></i>
+                <h1 class="text-2xl font-bold text-primary">AI变现平台</h1>
+            </div>
+            
+            <!-- 中间搜索栏 -->
+            <div class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input type="text" placeholder="搜索配置、提示词、参数" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 右侧功能区 -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-all-300">
+                        <i class="fa fa-bell-o text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20admin%20avatar%20modern%20style&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover">
+                        <span class="font-medium">管理员</span>
+                        <i class="fa fa-caret-down text-gray-600"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-user mr-2"></i>个人资料
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-cog mr-2"></i>账户设置
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors text-danger">
+                            <i class="fa fa-sign-out mr-2"></i>退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="flex flex-1">
+        <!-- 侧边栏导航 -->
+        <aside class="w-64 bg-white shadow-md h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
+            <nav class="py-4">
+                <div class="px-4 mt-4 mb-4">
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">配置中心</h2>
+                </div>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="admin-prompt-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-comment w-6"></i>
+                            <span>提示词管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-parameter-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-sliders w-6"></i>
+                            <span>参数管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-model-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-cube w-6"></i>
+                            <span>模型管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-style-management.html" class="flex items-center px-4 py-3 text-primary sidebar-active">
+                            <i class="fa fa-paint-brush w-6"></i>
+                            <span>风格管理</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="px-4 mt-4 mb-4">
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">团队中心</h2>
+                </div>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="admin-team-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-users w-6"></i>
+                            <span>团队管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 内容区域 -->
+        <div class="flex-1 p-6 overflow-y-auto">
+            <!-- 面包屑导航 -->
+            <div class="text-sm text-gray-500 mb-4">
+                <a href="#" class="hover:text-primary">首页</a> &gt; 
+                <a href="#" class="hover:text-primary">配置中心</a> &gt; 
+                <span class="text-primary">风格管理</span>
+            </div>
+            
+            <!-- 页面标题和操作按钮 -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1">风格管理</h1>
+                    <p class="text-gray-600">管理AI生成工具的风格模板，支持风格的添加、配置和分类管理</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center btn-hover">
+                        <i class="fa fa-plus mr-2"></i>
+                        添加风格
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 搜索和筛选区域 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="md:col-span-2">
+                        <div class="relative">
+                            <input type="text" placeholder="搜索风格名称、标签" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部频道</option>
+                            <option>AI短剧</option>
+                            <option>AI音乐</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部模型</option>
+                            <option>Stable Diffusion</option>
+                            <option>MidJourney</option>
+                            <option>DALL-E</option>
+                            <option>MusicGen</option>
+                            <option>Jukebox</option>
+                            <option>Riffusion</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部状态</option>
+                            <option>启用</option>
+                            <option>禁用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover">
+                        重置
+                    </button>
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover">
+                        搜索
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 风格列表 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    排序
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    风格ID
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    封面
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    风格名称
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    频道
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    描述
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    适用模型
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    状态
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary" onclick="sortByUsage()">
+                                    <div class="flex items-center space-x-1">
+                                        <span>使用次数</span>
+                                        <i class="fa fa-sort text-gray-400 hover:text-primary transition-colors"></i>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    操作
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- 风格项 1 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-001
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20colorful%20animation&image_size=square" alt="动漫风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20colorful%20animation&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('动漫风格', '日本动漫风格，色彩鲜艳，线条清晰', '启用', '1,245', 'STYLE-001', 'AI短剧', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20colorful%20animation&image_size=square', 'Stable Diffusion, MidJourney')">
+                                        动漫风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded">AI短剧</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">日本动漫风格，色彩鲜艳，线条清晰</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Stable Diffusion</span>
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">MidJourney</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="toggleStyleStatus(this, '动漫风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    1,245
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('动漫风格', '日本动漫风格，色彩鲜艳，线条清晰', '启用', 'STYLE-001', 'AI短剧', 'Stable Diffusion, MidJourney')">
+                                            编辑
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 2 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-002
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=pop%20music%20style%20modern%20colorful&image_size=square" alt="流行音乐风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=pop%20music%20style%20modern%20colorful&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('流行音乐风格', '现代流行音乐风格，节奏明快，旋律优美', '启用', '876', 'STYLE-002', 'AI音乐', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=pop%20music%20style%20modern%20colorful&image_size=square', 'MusicGen, Jukebox')">
+                                        流行音乐风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">AI音乐</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">现代流行音乐风格，节奏明快，旋律优美</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">MusicGen</span>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">Jukebox</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="toggleStyleStatus(this, '流行音乐风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    876
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('流行音乐风格', '现代流行音乐风格，节奏明快，旋律优美', '启用', 'STYLE-002', 'AI音乐', 'MusicGen, Jukebox')">
+                                            编辑
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 3 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-003
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=realistic%20style%20photorealistic%20detailed&image_size=square" alt="写实风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=realistic%20style%20photorealistic%20detailed&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('写实风格', '真实感强烈的写实风格，细节丰富', '启用', '982', 'STYLE-003', 'AI短剧', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=realistic%20style%20photorealistic%20detailed&image_size=square', 'Stable Diffusion, DALL-E')">
+                                        写实风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded">AI短剧</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">真实感强烈的写实风格，细节丰富</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Stable Diffusion</span>
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">DALL-E</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="toggleStyleStatus(this, '写实风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    982
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('写实风格', '真实感强烈的写实风格，细节丰富', '启用', 'STYLE-003', 'AI短剧', 'Stable Diffusion, DALL-E')">
+                                            编辑
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 4 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-004
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20chinese%20style%20traditional%20elegant&image_size=square" alt="古风风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20chinese%20style%20traditional%20elegant&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('古风风格', '中国传统古风风格，典雅古朴', '已停用', '456', 'STYLE-004', 'AI短剧', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20chinese%20style%20traditional%20elegant&image_size=square', 'Stable Diffusion')">
+                                        古风风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded">AI短剧</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">中国传统古风风格，典雅古朴</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Stable Diffusion</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" onchange="toggleStyleStatus(this, '古风风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">已停用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    456
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('古风风格', '中国传统古风风格，典雅古朴', '已停用', 'STYLE-004', 'AI短剧', 'Stable Diffusion')">
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 bg-danger text-white text-sm rounded hover:bg-danger/90 transition-colors" onclick="openStyleDelete('古风风格', 'STYLE-004')">
+                                            删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 5 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-005
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=rock%20music%20style%20energetic%20powerful&image_size=square" alt="摇滚音乐风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=rock%20music%20style%20energetic%20powerful&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('摇滚音乐风格', '充满活力的摇滚音乐风格，节奏强烈', '启用', '634', 'STYLE-005', 'AI音乐', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=rock%20music%20style%20energetic%20powerful&image_size=square', 'MusicGen, Riffusion')">
+                                        摇滚音乐风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">AI音乐</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">充满活力的摇滚音乐风格，节奏强烈</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">MusicGen</span>
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">Riffusion</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="toggleStyleStatus(this, '摇滚音乐风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    634
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('摇滚音乐风格', '充满活力的摇滚音乐风格，节奏强烈', '启用', 'STYLE-005', 'AI音乐', 'MusicGen, Riffusion')">
+                                            编辑
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 6 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-006
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sci-fi%20style%20futuristic%20technology&image_size=square" alt="科幻风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sci-fi%20style%20futuristic%20technology&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('科幻风格', '未来感十足的科幻风格，科技感强烈', '启用', '589', 'STYLE-006', 'AI短剧', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sci-fi%20style%20futuristic%20technology&image_size=square', 'MidJourney, Stable Diffusion')">
+                                        科幻风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded">AI短剧</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">未来感十足的科幻风格，科技感强烈</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">MidJourney</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Stable Diffusion</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="toggleStyleStatus(this, '科幻风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    589
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('科幻风格', '未来感十足的科幻风格，科技感强烈', '启用', 'STYLE-006', 'AI短剧', 'MidJourney, Stable Diffusion')">
+                                            编辑
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 7 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-007
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=classical%20music%20style%20elegant%20orchestra&image_size=square" alt="古典音乐风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=classical%20music%20style%20elegant%20orchestra&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('古典音乐风格', '优雅的古典音乐风格，旋律优美', '已停用', '234', 'STYLE-007', 'AI音乐', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=classical%20music%20style%20elegant%20orchestra&image_size=square', 'MusicGen')">
+                                        古典音乐风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">AI音乐</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">优雅的古典音乐风格，旋律优美</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">MusicGen</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" onchange="toggleStyleStatus(this, '古典音乐风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">已停用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    234
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('古典音乐风格', '优雅的古典音乐风格，旋律优美', '已停用', 'STYLE-007', 'AI音乐', 'MusicGen')">
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 bg-danger text-white text-sm rounded hover:bg-danger/90 transition-colors" onclick="openStyleDelete('古典音乐风格', 'STYLE-007')">
+                                            删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- 风格项 8 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="p-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors cursor-move" title="拖动调整顺序">
+                                        <i class="fa fa-bars"></i>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    STYLE-008
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon%20style%20cute%20colorful%20fun&image_size=square" alt="卡通风格封面" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="openImagePreview('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon%20style%20cute%20colorful%20fun&image_size=square')">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary cursor-pointer hover:text-primary/80 transition-colors" onclick="openStyleDetail('卡通风格', '可爱的卡通风格，形象生动有趣', '启用', '765', 'STYLE-008', 'AI短剧', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon%20style%20cute%20colorful%20fun&image_size=square', 'Stable Diffusion, DALL-E, MidJourney')">
+                                        卡通风格
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded">AI短剧</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">可爱的卡通风格，形象生动有趣</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Stable Diffusion</span>
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded">DALL-E</span>
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">MidJourney</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="toggleStyleStatus(this, '卡通风格')">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">启用</span>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    765
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors" onclick="openStyleEdit('卡通风格', '可爱的卡通风格，形象生动有趣', '启用', 'STYLE-008', 'AI短剧', 'Stable Diffusion, DALL-E, MidJourney')">
+                                            编辑
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="flex justify-center mt-8">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">上一页</span>
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
+                        1
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        2
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        3
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">下一页</span>
+                        <i class="fa fa-chevron-right"></i>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- 添加风格侧边弹窗 -->
+            <div id="addStyleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">添加风格</h3>
+                        <button id="cancelAddStyle" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">风格名称</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入风格名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">频道</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>AI短剧</option>
+                                    <option>AI音乐</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">封面</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                                    <input type="file" id="addStyleCover" class="hidden" accept="image/jpeg,image/png,image/gif">
+                                    <label for="addStyleCover" class="cursor-pointer">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <i class="fa fa-upload text-gray-400 text-2xl"></i>
+                                        </div>
+                                        <p class="text-gray-600">点击上传封面图片</p>
+                                        <p class="text-gray-400 text-sm mt-1">支持 JPG、PNG、GIF 格式，建议尺寸1:1，大小不超过2MB</p>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">适用模型</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="models" value="Stable Diffusion" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">Stable Diffusion</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="models" value="MidJourney" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">MidJourney</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="models" value="DALL-E" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">DALL-E</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="models" value="MusicGen" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">MusicGen</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="models" value="Jukebox" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">Jukebox</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="models" value="Riffusion" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">Riffusion</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                                <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" placeholder="请输入风格描述"></textarea>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelAddStyle" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 风格详情侧边弹窗 -->
+            <div id="styleDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">风格详情</h3>
+                        <button id="closeStyleDetail" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <div class="flex items-start space-x-4 mb-4">
+                                <img id="detailStyleCover" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20colorful%20animation&image_size=square" alt="风格封面" class="w-24 h-24 rounded-lg object-cover">
+                                <div>
+                                    <h2 class="text-2xl font-bold mb-2" id="detailStyleName">动漫风格</h2>
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full" id="detailStyleId">STYLE-001</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full" id="detailStyleStatus">启用</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500" id="detailStyleChannel">AI短剧</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">描述</h4>
+                                <p class="text-gray-700" id="detailStyleDescription">日本动漫风格，色彩鲜艳，线条清晰</p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">适用模型</h4>
+                                <div class="flex flex-wrap gap-2" id="detailStyleModels">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Stable Diffusion</span>
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">MidJourney</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">使用统计</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm text-gray-500">使用次数</p>
+                                        <p class="text-2xl font-bold text-gray-800" id="detailStyleUsage">1,245</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm text-gray-500">创建时间</p>
+                                        <p class="text-lg font-semibold text-gray-800" id="detailStyleCreated">2026-01-15</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            编辑
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 风格编辑侧边弹窗 -->
+            <div id="styleEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">编辑风格</h3>
+                        <button id="closeStyleEdit" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">风格ID</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" id="editStyleId" readonly>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">风格名称</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" id="editStyleName" placeholder="请输入风格名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">频道</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" id="editStyleChannel">
+                                    <option>AI短剧</option>
+                                    <option>AI音乐</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">封面</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                                    <input type="file" id="editStyleCover" class="hidden" accept="image/jpeg,image/png,image/gif">
+                                    <label for="editStyleCover" class="cursor-pointer">
+                                        <img id="editStyleCoverPreview" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20colorful%20animation&image_size=square" alt="当前封面" class="w-24 h-24 rounded-lg object-cover mx-auto mb-2">
+                                        <p class="text-gray-600">点击更换封面图片</p>
+                                        <p class="text-gray-400 text-sm mt-1">支持 JPG、PNG、GIF 格式，建议尺寸1:1，大小不超过2MB</p>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">适用模型</label>
+                                <div class="flex flex-wrap gap-2" id="editStyleModels">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="editModels" value="Stable Diffusion" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">Stable Diffusion</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="editModels" value="MidJourney" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">MidJourney</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="editModels" value="DALL-E" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">DALL-E</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="editModels" value="MusicGen" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">MusicGen</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="editModels" value="Jukebox" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">Jukebox</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="editModels" value="Riffusion" class="w-4 h-4 text-primary rounded">
+                                        <span class="text-sm text-gray-700">Riffusion</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                                <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" id="editStyleDescription" placeholder="请输入风格描述"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" id="editStyleStatus">
+                                    <option>启用</option>
+                                    <option>已停用</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelStyleEdit" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 删除确认弹窗 -->
+            <div id="styleDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa fa-trash text-red-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">确认删除</h3>
+                        <p class="text-gray-600" id="deleteStyleName">确定要删除风格「动漫风格」吗？</p>
+                        <p class="text-gray-500 text-sm mt-2">此操作不可撤销，删除后相关数据将被永久移除。</p>
+                    </div>
+                    <div class="flex space-x-3 justify-center">
+                        <button id="cancelStyleDelete" class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="flex-1 bg-danger text-white font-medium py-2 px-4 rounded-lg hover:bg-danger/90 transition-all-300">
+                            删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图片预览弹窗 -->
+            <div id="imagePreviewModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+                <div class="bg-gray-900 rounded-xl shadow-lg max-w-4xl w-full mx-4">
+                    <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                        <h3 class="text-white font-medium">图片预览</h3>
+                        <button id="closeImagePreview" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex items-center justify-center">
+                        <img id="previewImage" src="" alt="封面预览" class="max-w-full max-h-[70vh] object-contain rounded-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- JavaScript -->
+    <script>
+        // 添加风格按钮点击事件
+        document.querySelectorAll('button').forEach(function(button) {
+            if (button.textContent.trim() === '添加风格') {
+                button.addEventListener('click', function() {
+                    document.getElementById('addStyleModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 取消按钮点击事件
+        document.querySelectorAll('#cancelAddStyle').forEach(function(button) {
+            button.addEventListener('click', function() {
+                document.getElementById('addStyleModal').classList.add('hidden');
+            });
+        });
+        
+        // 点击模态框外部关闭
+        document.getElementById('addStyleModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 风格颜色选择
+        document.querySelectorAll('#addStyleModal .w-10.h-10').forEach(function(color) {
+            color.addEventListener('click', function() {
+                document.querySelectorAll('#addStyleModal .w-10.h-10').forEach(function(c) {
+                    c.classList.remove('border-white', 'shadow-md');
+                    c.classList.add('border-transparent');
+                });
+                this.classList.remove('border-transparent');
+                this.classList.add('border-white', 'shadow-md');
+            });
+        });
+        
+        // 关闭风格详情弹窗
+        document.getElementById('closeStyleDetail').addEventListener('click', function() {
+            document.getElementById('styleDetailModal').classList.add('hidden');
+        });
+        
+        // 点击详情弹窗外部关闭
+        document.getElementById('styleDetailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 关闭风格编辑弹窗
+        document.getElementById('closeStyleEdit').addEventListener('click', function() {
+            document.getElementById('styleEditModal').classList.add('hidden');
+        });
+        
+        document.getElementById('cancelStyleEdit').addEventListener('click', function() {
+            document.getElementById('styleEditModal').classList.add('hidden');
+        });
+        
+        // 点击编辑弹窗外部关闭
+        document.getElementById('styleEditModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 关闭删除确认弹窗
+        document.getElementById('cancelStyleDelete').addEventListener('click', function() {
+            document.getElementById('styleDeleteModal').classList.add('hidden');
+        });
+        
+        // 点击删除弹窗外部关闭
+        document.getElementById('styleDeleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 打开风格详情弹窗
+        window.openStyleDetail = function(name, description, status, usage, id, channel, cover, models) {
+            document.getElementById('detailStyleName').textContent = name;
+            document.getElementById('detailStyleId').textContent = id;
+            document.getElementById('detailStyleStatus').textContent = status;
+            document.getElementById('detailStyleDescription').textContent = description;
+            document.getElementById('detailStyleChannel').textContent = channel || 'AI短剧';
+            document.getElementById('detailStyleUsage').textContent = usage;
+            document.getElementById('detailStyleCover').src = cover || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=abstract%20art%20style%20colorful&image_size=square';
+            
+            const modelsContainer = document.getElementById('detailStyleModels');
+            modelsContainer.innerHTML = '';
+            if (models) {
+                const modelList = models.split(',');
+                modelList.forEach(function(model) {
+                    const trimmedModel = model.trim();
+                    const span = document.createElement('span');
+                    span.className = 'px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded';
+                    span.textContent = trimmedModel;
+                    modelsContainer.appendChild(span);
+                });
+            }
+            document.getElementById('styleDetailModal').classList.remove('hidden');
+        };
+        
+        // 打开风格编辑弹窗
+        window.openStyleEdit = function(name, description, status, id, channel, models) {
+            document.getElementById('editStyleId').value = id;
+            document.getElementById('editStyleName').value = name;
+            document.getElementById('editStyleDescription').value = description;
+            document.getElementById('editStyleStatus').value = status;
+            document.getElementById('editStyleChannel').value = channel || 'AI短剧';
+            
+            document.querySelectorAll('input[name="editModels"]').forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+            
+            if (models) {
+                const modelList = models.split(',');
+                modelList.forEach(function(model) {
+                    const trimmedModel = model.trim();
+                    const checkbox = document.querySelector(`input[name="editModels"][value="${trimmedModel}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+            document.getElementById('styleEditModal').classList.remove('hidden');
+        };
+        
+        // 打开删除确认弹窗
+        window.openStyleDelete = function(name, id) {
+            document.getElementById('deleteStyleName').textContent = `确定要删除风格「${name}」吗？`;
+            document.getElementById('styleDeleteModal').classList.remove('hidden');
+        };
+        
+        // 打开图片预览弹窗
+        window.openImagePreview = function(imageUrl) {
+            document.getElementById('previewImage').src = imageUrl;
+            document.getElementById('imagePreviewModal').classList.remove('hidden');
+        };
+        
+        // 关闭图片预览弹窗
+        document.getElementById('closeImagePreview').addEventListener('click', function() {
+            document.getElementById('imagePreviewModal').classList.add('hidden');
+        });
+        
+        // 点击图片预览弹窗背景关闭
+        document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                document.getElementById('imagePreviewModal').classList.add('hidden');
+            }
+        });
+        
+        // 切换风格状态
+        window.toggleStyleStatus = function(checkbox, styleName) {
+            const label = checkbox.nextElementSibling.nextElementSibling;
+            if (checkbox.checked) {
+                label.textContent = '启用';
+                label.classList.remove('text-gray-500');
+                label.classList.add('text-gray-700');
+            } else {
+                label.textContent = '已停用';
+                label.classList.remove('text-gray-700');
+                label.classList.add('text-gray-500');
+            }
+        };
+        
+        // 使用次数排序
+        let sortAscending = true;
+        window.sortByUsage = function() {
+            const tbody = document.querySelector('table tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort(function(a, b) {
+                const usageA = parseInt(a.querySelector('td:nth-child(7)').textContent.replace(/,/g, ''));
+                const usageB = parseInt(b.querySelector('td:nth-child(7)').textContent.replace(/,/g, ''));
+                
+                if (sortAscending) {
+                    return usageA - usageB;
+                } else {
+                    return usageB - usageA;
+                }
+            });
+            
+            rows.forEach(function(row) {
+                tbody.appendChild(row);
+            });
+            
+            sortAscending = !sortAscending;
+            
+            const sortIcon = document.querySelector('th:nth-child(7) i');
+            if (sortAscending) {
+                sortIcon.className = 'fa fa-sort text-gray-400 hover:text-primary transition-colors';
+            } else {
+                sortIcon.className = 'fa fa-sort-desc text-primary';
+            }
+        };
+        
+        // 拖动排序功能
+        let draggedRow = null;
+        let dragOverRow = null;
+        
+        document.querySelectorAll('table tbody tr').forEach(function(row) {
+            const dragHandle = row.querySelector('.cursor-move');
+            if (dragHandle) {
+                dragHandle.addEventListener('mousedown', function(e) {
+                    draggedRow = row;
+                    draggedRow.style.opacity = '0.5';
+                    draggedRow.style.cursor = 'grabbing';
+                    
+                    document.addEventListener('mousemove', dragHandler);
+                    document.addEventListener('mouseup', dropHandler);
+                    
+                    e.preventDefault();
+                });
+            }
+        });
+        
+        function dragHandler(e) {
+            if (!draggedRow) return;
+            
+            const mouseY = e.clientY;
+            const rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(function(row) {
+                const rect = row.getBoundingClientRect();
+                const rowCenterY = rect.top + rect.height / 2;
+                
+                if (mouseY < rowCenterY) {
+                    row.style.borderTop = '2px solid #6366F1';
+                    row.style.borderBottom = 'none';
+                    dragOverRow = row;
+                } else {
+                    row.style.borderBottom = '2px solid #6366F1';
+                    row.style.borderTop = 'none';
+                    dragOverRow = row;
+                }
+            });
+        }
+        
+        function dropHandler() {
+            if (draggedRow && dragOverRow && draggedRow !== dragOverRow) {
+                const tbody = document.querySelector('table tbody');
+                const rect = dragOverRow.getBoundingClientRect();
+                const mouseY = event.clientY;
+                
+                if (mouseY < rect.top + rect.height / 2) {
+                    tbody.insertBefore(draggedRow, dragOverRow);
+                } else {
+                    tbody.insertBefore(draggedRow, dragOverRow.nextSibling);
+                }
+            }
+            
+            document.querySelectorAll('table tbody tr').forEach(function(row) {
+                row.style.borderTop = 'none';
+                row.style.borderBottom = 'none';
+            });
+            
+            draggedRow.style.opacity = '1';
+            draggedRow.style.cursor = 'default';
+            
+            draggedRow = null;
+            dragOverRow = null;
+            
+            document.removeEventListener('mousemove', dragHandler);
+            document.removeEventListener('mouseup', dropHandler);
+        }
+    </script>
+</body>
+</html>

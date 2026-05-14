@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提示词管理 - AI变现平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 自定义配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366F1',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .bg-gradient-ai {
+                background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            }
+            .bg-card-hover {
+                transition: all 0.3s ease;
+            }
+            .bg-card-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .sidebar-active {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-left: 4px solid #6366F1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-dark min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- 品牌标志 -->
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bolt text-primary text-3xl"></i>
+                <h1 class="text-2xl font-bold text-primary">AI变现平台</h1>
+            </div>
+            
+            <!-- 中间搜索栏 -->
+            <div class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input type="text" placeholder="搜索配置、提示词、参数" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 右侧功能区 -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-all-300">
+                        <i class="fa fa-bell-o text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20admin%20avatar%20modern%20style&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover">
+                        <span class="font-medium">管理员</span>
+                        <i class="fa fa-caret-down text-gray-600"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-user mr-2"></i>个人资料
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-cog mr-2"></i>账户设置
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors text-danger">
+                            <i class="fa fa-sign-out mr-2"></i>退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="flex flex-1">
+        <!-- 侧边栏导航 -->
+        <aside class="w-64 bg-white shadow-md h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
+            <nav class="py-4">
+                <div class="px-4 mt-4 mb-4">
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">配置中心</h2>
+                </div>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="admin-prompt-management.html" class="flex items-center px-4 py-3 text-primary sidebar-active">
+                            <i class="fa fa-comment w-6"></i>
+                            <span>提示词管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-parameter-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-sliders w-6"></i>
+                            <span>参数管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-model-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-cube w-6"></i>
+                            <span>模型管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-style-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-paint-brush w-6"></i>
+                            <span>风格管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 内容区域 -->
+        <div class="flex-1 p-6 overflow-y-auto">
+            <!-- 面包屑导航 -->
+            <div class="text-sm text-gray-500 mb-4">
+                <a href="#" class="hover:text-primary">首页</a> &gt; 
+                <a href="#" class="hover:text-primary">配置中心</a> &gt; 
+                <span class="text-primary">提示词管理</span>
+            </div>
+            
+            <!-- 页面标题和操作按钮 -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1">提示词管理</h1>
+
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center">
+                        <i class="fa fa-download mr-2"></i>
+                        导出
+                    </button>
+                    <button id="categoryManagementBtn" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 flex items-center">
+                        <i class="fa fa-tags mr-2"></i>
+                        分类管理
+                    </button>
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center">
+                        <i class="fa fa-plus mr-2"></i>
+                        新建提示词
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 搜索和筛选区域 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="md:col-span-2">
+                        <div class="relative">
+                            <input type="text" placeholder="搜索提示词名称、关键词" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部频道</option>
+                            <option>短剧</option>
+                            <option>音乐</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部分类</option>
+                            <option>环境</option>
+                            <option>角色</option>
+                            <option>剧本</option>
+                            <option>风格</option>
+                            <option>歌词</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部</option>
+                            <option>已启用</option>
+                            <option>已停用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>适用工具</option>
+                            <option>AI短剧生成</option>
+                            <option>AI音乐生成</option>
+                            <option>AI图像生成</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            重置
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 提示词表格 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提示词ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提示词名称</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提示词内容</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">频道</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">适用工具</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        调用次数
+                                        <div class="ml-2 flex flex-col">
+                                            <button class="text-gray-400 hover:text-gray-600">
+                                                <i class="fa fa-chevron-up text-xs"></i>
+                                            </button>
+                                            <button class="text-gray-400 hover:text-gray-600">
+                                                <i class="fa fa-chevron-down text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">更新时间</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_001
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    短剧开头生成
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    生成一个引人入胜的短剧开头，包含强烈的视觉冲击和悬念，让观众立即被吸引。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    短剧
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        剧本
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI短剧生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        已启用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    3,842
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-10 14:22
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-600 hover:text-gray-800">
+                                            <i class="fa fa-ban"></i>
+                                            <span class="ml-1">停用</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_002
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    短剧冲突点生成
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    为短剧生成紧张激烈的冲突点，包括人物矛盾、情节转折和情感高潮，增强剧情张力。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    短剧
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        剧本
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI短剧生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        已启用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2,617
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-08 09:25
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-600 hover:text-gray-800">
+                                            <i class="fa fa-ban"></i>
+                                            <span class="ml-1">停用</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_003
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    短剧结尾生成
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    生成一个令人难忘的短剧结尾，包含意外转折、情感共鸣和开放结局，让观众回味无穷。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    短剧
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        剧本
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI短剧生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        已启用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    4,109
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-09 16:47
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-600 hover:text-gray-800">
+                                            <i class="fa fa-ban"></i>
+                                            <span class="ml-1">停用</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_004
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    音乐风格描述
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    详细描述音乐的风格、节奏、情绪和 instrumentation，帮助AI生成符合特定氛围的音乐作品。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    音乐
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        风格
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI音乐生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        已停用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    0
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-01 03:43
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary hover:text-primary/80">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="ml-1">编辑</span>
+                                        </button>
+                                        <button class="text-danger hover:text-danger/80">
+                                            <i class="fa fa-trash"></i>
+                                            <span class="ml-1">删除</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_005
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    歌词生成
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    根据给定的主题、情感和风格，生成押韵、有节奏的歌词内容，适合配合音乐演唱。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    音乐
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        歌词
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI音乐生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        已启用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    1,873
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-05 11:22
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-600 hover:text-gray-800">
+                                            <i class="fa fa-ban"></i>
+                                            <span class="ml-1">停用</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_006
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    短剧环境描述
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    详细描述短剧中的场景环境，包括地点、时间、天气、氛围等元素，营造特定的视觉和情感效果。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    短剧
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        环境
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI短剧生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        已启用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    1,234
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-07 14:30
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-600 hover:text-gray-800">
+                                            <i class="fa fa-ban"></i>
+                                            <span class="ml-1">停用</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    PROMPT_007
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    短剧角色设定
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    为短剧中的角色创建详细的人物设定，包括外貌、性格、背景故事、动机和目标等，使角色更加立体丰满。
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    短剧
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        角色
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    AI短剧生成
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        已启用
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    987
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    管理员
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-06 10:15
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-600 hover:text-gray-800">
+                                            <i class="fa fa-ban"></i>
+                                            <span class="ml-1">停用</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            上一页
+                        </a>
+                        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            下一页
+                        </a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                显示 <span class="font-medium">1</span> 到 <span class="font-medium">5</span> 共 <span class="font-medium">128</span> 条记录
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">上一页</span>
+                                    <i class="fa fa-chevron-left"></i>
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
+                                    1
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    2
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    3
+                                </a>
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                    ...
+                                </span>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    26
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">下一页</span>
+                                    <i class="fa fa-chevron-right"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 新建提示词侧边弹窗 -->
+            <div id="addPromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">新建提示词</h3>
+                        <button id="cancelAddPrompt" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">提示词名称</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入提示词名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">频道</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>短剧</option>
+                                    <option>音乐</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>环境</option>
+                                    <option>角色</option>
+                                    <option>剧本</option>
+                                    <option>风格</option>
+                                    <option>歌词</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">适用工具</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>AI短剧生成</option>
+                                    <option>AI音乐生成</option>
+                                    <option>AI图像生成</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">提示词内容</label>
+                                <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="4" placeholder="请输入提示词内容"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>已启用</option>
+                                    <option>已停用</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelAddPrompt" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分类管理侧边弹窗 -->
+            <div id="categoryManagementModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-3xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">提示词分类管理</h3>
+                        <button id="cancelCategoryManagement" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="font-medium">分类列表</h4>
+                                <p class="text-sm text-gray-500">管理提示词分类，支持添加、编辑和删除</p>
+                            </div>
+                            <button id="addCategoryBtn" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center">
+                                <i class="fa fa-plus mr-2"></i>
+                                添加分类
+                            </button>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类ID</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类名称</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">频道</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提示词数量</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                CAT_001
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                环境
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                短剧
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                1,234
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:text-primary/80">
+                                                        <i class="fa fa-edit"></i>
+                                                        <span class="ml-1">编辑</span>
+                                                    </button>
+                                                    <button class="text-danger hover:text-danger/80">
+                                                        <i class="fa fa-trash"></i>
+                                                        <span class="ml-1">删除</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                CAT_002
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                角色
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                短剧
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                987
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:text-primary/80">
+                                                        <i class="fa fa-edit"></i>
+                                                        <span class="ml-1">编辑</span>
+                                                    </button>
+                                                    <button class="text-danger hover:text-danger/80">
+                                                        <i class="fa fa-trash"></i>
+                                                        <span class="ml-1">删除</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                CAT_003
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                剧本
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                短剧
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                10,568
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:text-primary/80">
+                                                        <i class="fa fa-edit"></i>
+                                                        <span class="ml-1">编辑</span>
+                                                    </button>
+                                                    <button class="text-danger hover:text-danger/80">
+                                                        <i class="fa fa-trash"></i>
+                                                        <span class="ml-1">删除</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                CAT_004
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                风格
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                音乐
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                0
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:text-primary/80">
+                                                        <i class="fa fa-edit"></i>
+                                                        <span class="ml-1">编辑</span>
+                                                    </button>
+                                                    <button class="text-danger hover:text-danger/80">
+                                                        <i class="fa fa-trash"></i>
+                                                        <span class="ml-1">删除</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                CAT_005
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                歌词
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                音乐
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                1,873
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:text-primary/80">
+                                                        <i class="fa fa-edit"></i>
+                                                        <span class="ml-1">编辑</span>
+                                                    </button>
+                                                    <button class="text-danger hover:text-danger/80">
+                                                        <i class="fa fa-trash"></i>
+                                                        <span class="ml-1">删除</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 添加分类侧边弹窗 -->
+            <div id="addCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">添加分类</h3>
+                        <button id="cancelAddCategory" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">分类名称</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入分类名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">频道</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>短剧</option>
+                                    <option>音乐</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelAddCategory" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 编辑提示词侧边弹窗 -->
+            <div id="editPromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 hidden">
+                <div class="bg-white rounded-l-xl shadow-lg w-full max-w-2xl h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">编辑提示词</h3>
+                        <button id="cancelEditPrompt" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">提示词名称</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" value="音乐风格描述">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">频道</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>短剧</option>
+                                    <option selected>音乐</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>环境</option>
+                                    <option>角色</option>
+                                    <option>剧本</option>
+                                    <option selected>风格</option>
+                                    <option>歌词</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">适用工具</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>AI短剧生成</option>
+                                    <option selected>AI音乐生成</option>
+                                    <option>AI图像生成</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">提示词内容</label>
+                                <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="4">详细描述音乐的风格、节奏、情绪和 instrumentation，帮助AI生成符合特定氛围的音乐作品。</textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option>已启用</option>
+                                    <option selected>已停用</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelEditPrompt" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 删除提示词确认弹窗 -->
+            <div id="deletePromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-xl shadow-lg w-full max-w-md">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold">确认删除</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">您确定要删除这个提示词吗？此操作无法撤销。</p>
+                        <p class="text-sm text-gray-500">提示词：音乐风格描述</p>
+                    </div>
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelDeletePrompt" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                            取消
+                        </button>
+                        <button class="bg-danger text-white font-medium py-2 px-4 rounded-lg hover:bg-danger/90 transition-all-300">
+                            删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- JavaScript -->
+    <script>
+        // 新建提示词按钮点击事件
+        document.querySelectorAll('button').forEach(function(button) {
+            if (button.textContent.trim() === '新建提示词') {
+                button.addEventListener('click', function() {
+                    document.getElementById('addPromptModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 分类管理按钮点击事件
+        document.getElementById('categoryManagementBtn').addEventListener('click', function() {
+            document.getElementById('categoryManagementModal').classList.remove('hidden');
+        });
+        
+        // 取消按钮点击事件
+        document.getElementById('cancelAddPrompt').addEventListener('click', function() {
+            document.getElementById('addPromptModal').classList.add('hidden');
+        });
+        
+        // 分类管理关闭按钮点击事件
+        document.getElementById('cancelCategoryManagement').addEventListener('click', function() {
+            document.getElementById('categoryManagementModal').classList.add('hidden');
+        });
+        
+        // 点击模态框外部关闭
+        document.getElementById('addPromptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 点击分类管理模态框外部关闭
+        document.getElementById('categoryManagementModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 添加分类按钮点击事件
+        document.getElementById('addCategoryBtn').addEventListener('click', function() {
+            document.getElementById('addCategoryModal').classList.remove('hidden');
+        });
+        
+        // 取消添加分类按钮点击事件
+        document.getElementById('cancelAddCategory').addEventListener('click', function() {
+            document.getElementById('addCategoryModal').classList.add('hidden');
+        });
+        
+        // 点击添加分类模态框外部关闭
+        document.getElementById('addCategoryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 编辑按钮点击事件
+        document.querySelectorAll('button').forEach(function(button) {
+            if (button.textContent.trim() === '编辑') {
+                button.addEventListener('click', function() {
+                    document.getElementById('editPromptModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 取消编辑按钮点击事件
+        document.getElementById('cancelEditPrompt').addEventListener('click', function() {
+            document.getElementById('editPromptModal').classList.add('hidden');
+        });
+        
+        // 点击编辑模态框外部关闭
+        document.getElementById('editPromptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 删除按钮点击事件
+        document.querySelectorAll('button').forEach(function(button) {
+            if (button.textContent.trim() === '删除') {
+                button.addEventListener('click', function() {
+                    document.getElementById('deletePromptModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 取消删除按钮点击事件
+        document.getElementById('cancelDeletePrompt').addEventListener('click', function() {
+            document.getElementById('deletePromptModal').classList.add('hidden');
+        });
+        
+        // 点击删除模态框外部关闭
+        document.getElementById('deletePromptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
