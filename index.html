@@ -2,25 +2,107 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>页面导航</title>
+    <title>页面导航菜单</title>
     <style>
-        /* 简单美化一下，看着更舒服 */
-        body { font-family: Arial; padding: 30px; }
-        a { display: block; margin: 15px 0; font-size: 18px; color: #0066ff; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", Arial;
+            background-color: #f5f7fa;
+        }
+        /* 布局：左侧侧边栏 + 右侧主内容 */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 260px;
+            background: #2a3b4c;
+            color: #fff;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        /* 侧边栏标题 */
+        .sidebar-title {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #3d556b;
+        }
+        /* 分类样式 */
+        .menu-category {
+            padding: 12px 25px;
+            font-size: 16px;
+            color: #9fb3c7;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        /* 菜单链接样式 */
+        .menu-item {
+            display: block;
+            padding: 12px 25px;
+            color: #e6e6e6;
+            text-decoration: none;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        /* 鼠标悬浮效果 */
+        .menu-item:hover {
+            background: #3d556b;
+            color: #fff;
+            padding-left: 30px;
+        }
+        /* 右侧主内容区 */
+        .main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+        }
+        .main h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .main p {
+            color: #666;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <h2>仓库所有HTML页面导航</h2>
+    <div class="layout">
+        <!-- 左侧侧边导航菜单 -->
+        <div class="sidebar">
+            <h2 class="sidebar-title">后台导航菜单</h2>
 
-    <!-- 原有的三个页面链接 -->
-    <a href="admin-model-management.html" target="_blank">模型管理页面</a>
-    <a href="admin-prompt-management.html" target="_blank">提示词管理页面</a>
-    <a href="admin-style-management.html" target="_blank">风格管理页面</a>
+            <!-- 分类1 -->
+            <div class="menu-category">内容管理模块</div>
+            <a href="admin-model-management.html" class="menu-item" target="_blank">模型管理</a>
+            <a href="admin-prompt-management.html" class="menu-item" target="_blank">提示词管理</a>
+            <a href="admin-style-management.html" class="menu-item" target="_blank">风格管理</a>
+            <a href="admin-team-management.html" class="menu-item" target="_blank">团队管理</a>
+            <a href="admin-account-management.html" class="menu-item" target="_blank">账户管理</a>
 
-    <!-- 新增的团队管理页面链接 -->
-    <a href="admin-team-management.html" target="_blank">团队管理页面</a>
-    <a href="admin-account-management.html" target="_blank">账户管理页面</a>
-    
+            <!-- 分类2（后续新增分类直接复制） -->
+            <div class="menu-category">交易管理模块</div>
+            <a href="admin-account-management.html" class="menu-item" target="_blank">账户管理</a>
+            <!-- 
+            <div class="menu-category">业务功能模块</div>
+            <a href="xxx.html" class="menu-item" target="_blank">页面名称</a> 
+            -->
+        </div>
 
+        <!-- 右侧内容区 -->
+        <div class="main">
+            <h2>欢迎使用页面导航</h2>
+            <p>点击左侧菜单，即可打开对应的管理页面~</p>
+        </div>
+    </div>
 </body>
 </html>
