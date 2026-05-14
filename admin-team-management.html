@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队管理 - AI变现平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366F1',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .bg-gradient-ai {
+                background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            }
+            .bg-card-hover {
+                transition: all 0.3s ease;
+                border: 1px solid transparent;
+            }
+            .bg-card-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                border-color: rgba(99, 102, 241, 0.2);
+            }
+            .card-icon {
+                transition: all 0.3s ease;
+            }
+            .bg-card-hover:hover .card-icon {
+                transform: scale(1.1);
+            }
+            .btn-hover {
+                transition: all 0.3s ease;
+            }
+            .btn-hover:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+            .tag-hover {
+                transition: all 0.2s ease;
+            }
+            .tag-hover:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .sidebar-active {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-left: 4px solid #6366F1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-dark min-h-screen flex flex-col">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bolt text-primary text-3xl"></i>
+                <h1 class="text-2xl font-bold text-primary">AI变现平台</h1>
+            </div>
+            
+            <div class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input type="text" placeholder="搜索团队名称、管理员" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-all-300">
+                        <i class="fa fa-bell-o text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20admin%20avatar%20modern%20style&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover">
+                        <span class="font-medium">管理员</span>
+                        <i class="fa fa-caret-down text-gray-600"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-user mr-2"></i>个人资料
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-cog mr-2"></i>账户设置
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors text-danger">
+                            <i class="fa fa-sign-out mr-2"></i>退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex flex-1">
+        <aside class="w-64 bg-white shadow-md h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
+            <nav class="py-4">
+                <div class="px-4 mt-4 mb-4">
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">配置中心</h2>
+                </div>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="admin-prompt-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-comment w-6"></i>
+                            <span>提示词管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-parameter-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-sliders w-6"></i>
+                            <span>参数管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-model-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-cube w-6"></i>
+                            <span>模型管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-style-management.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fa fa-paint-brush w-6"></i>
+                            <span>风格管理</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="px-4 mt-4 mb-4">
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">团队中心</h2>
+                </div>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="admin-team-management.html" class="flex items-center px-4 py-3 text-primary sidebar-active">
+                            <i class="fa fa-users w-6"></i>
+                            <span>团队管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div class="text-sm text-gray-500 mb-4">
+                <a href="#" class="hover:text-primary">首页</a> &gt; 
+                <a href="#" class="hover:text-primary">团队中心</a> &gt; 
+                <span class="text-primary">团队管理</span>
+            </div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1">团队管理</h1>
+                    <p class="text-gray-600">管理平台中的团队信息，包括团队成员、作品和点数管理</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 flex items-center btn-hover">
+                        <i class="fa fa-plus mr-2"></i>
+                        创建团队
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <div class="relative">
+                            <input type="text" placeholder="搜索团队名称、公司名称、管理员" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部状态</option>
+                            <option>正常</option>
+                            <option>冻结</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部排序</option>
+                            <option>创建时间</option>
+                            <option>作品数量</option>
+                            <option>成员数量</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover">
+                        重置
+                    </button>
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover">
+                        搜索
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    团队ID
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    团队名称
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    公司名称
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    管理员
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    作品数量
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    剩余点数
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    成员数量
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    状态
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    操作
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    TEAM-001
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary">创新科技团队</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    北京创新科技有限公司
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20male%20avatar%20portrait&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                                        <div>
+                                            <div class="text-sm font-medium">张经理</div>
+                                            <div class="text-xs text-gray-500">138****8888</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-primary font-bold cursor-pointer hover:underline" onclick="openWorksModal('TEAM-001', '创新科技团队')">
+                                        128
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-secondary font-bold cursor-pointer hover:underline" onclick="openPointsModal('TEAM-001', '创新科技团队')">
+                                        5,680
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-accent font-bold cursor-pointer hover:underline" onclick="openMembersModal('TEAM-001', '创新科技团队')">
+                                        15
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">正常</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors">
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors">
+                                            冻结
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    TEAM-002
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary">艺术创作工作室</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    上海艺术文化传播有限公司
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20female%20avatar%20portrait&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                                        <div>
+                                            <div class="text-sm font-medium">李总监</div>
+                                            <div class="text-xs text-gray-500">139****6666</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-primary font-bold cursor-pointer hover:underline" onclick="openWorksModal('TEAM-002', '艺术创作工作室')">
+                                        89
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-secondary font-bold cursor-pointer hover:underline" onclick="openPointsModal('TEAM-002', '艺术创作工作室')">
+                                        3,240
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-accent font-bold cursor-pointer hover:underline" onclick="openMembersModal('TEAM-002', '艺术创作工作室')">
+                                        8
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">正常</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors">
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors">
+                                            冻结
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    TEAM-003
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary">梦想动画团队</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    深圳梦想动画科技有限公司
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20young%20male%20avatar&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                                        <div>
+                                            <div class="text-sm font-medium">王主管</div>
+                                            <div class="text-xs text-gray-500">137****5555</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-primary font-bold cursor-pointer hover:underline" onclick="openWorksModal('TEAM-003', '梦想动画团队')">
+                                        256
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-secondary font-bold cursor-pointer hover:underline" onclick="openPointsModal('TEAM-003', '梦想动画团队')">
+                                        12,800
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-accent font-bold cursor-pointer hover:underline" onclick="openMembersModal('TEAM-003', '梦想动画团队')">
+                                        22
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">冻结</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors">
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 bg-secondary text-white text-sm rounded hover:bg-secondary/90 transition-colors">
+                                            解冻
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    TEAM-004
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-primary">音乐创作小组</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    杭州音乐文化有限公司
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20creative%20female%20avatar&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover mr-2">
+                                        <div>
+                                            <div class="text-sm font-medium">陈老师</div>
+                                            <div class="text-xs text-gray-500">136****4444</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-primary font-bold cursor-pointer hover:underline" onclick="openWorksModal('TEAM-004', '音乐创作小组')">
+                                        67
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-secondary font-bold cursor-pointer hover:underline" onclick="openPointsModal('TEAM-004', '音乐创作小组')">
+                                        2,150
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-accent font-bold cursor-pointer hover:underline" onclick="openMembersModal('TEAM-004', '音乐创作小组')">
+                                        6
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">正常</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-colors">
+                                            编辑
+                                        </button>
+                                        <button class="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors">
+                                            冻结
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            上一页
+                        </button>
+                        <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            下一页
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                显示 <span class="font-medium">1</span> 到 <span class="font-medium">4</span> 条，共 <span class="font-medium">12</span> 条记录
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">上一页</span>
+                                    <i class="fa fa-chevron-left"></i>
+                                </button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
+                                    1
+                                </button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    2
+                                </button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    3
+                                </button>
+                                <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">下一页</span>
+                                    <i class="fa fa-chevron-right"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="works-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeModal('works-modal')"></div>
+            <div class="relative bg-white rounded-xl shadow-xl transform transition-all max-w-2xl w-full mx-auto">
+                <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">作品列表</h3>
+                    <button type="button" class="close-modal-btn p-2 hover:bg-gray-100 rounded-full transition-colors" onclick="closeModal('works-modal')">
+                        <i class="fa fa-times text-gray-500"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="text-sm text-gray-600">团队：</span>
+                        <span class="text-sm font-medium text-primary" id="works-team-name">创新科技团队</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=AI%20generated%20artistic%20image%20colorful&image_size=landscape_4_3" alt="作品封面" class="w-16 h-12 rounded object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">AI绘画作品 - 城市夜景</div>
+                                <div class="text-sm text-gray-500">创建时间：2024-01-15 14:30</div>
+                            </div>
+                            <div class="text-sm text-gray-500">类型：AI绘画</div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=AI%20generated%20music%20album%20cover&image_size=landscape_4_3" alt="作品封面" class="w-16 h-12 rounded object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">AI音乐作品 - 星空旋律</div>
+                                <div class="text-sm text-gray-500">创建时间：2024-01-14 09:15</div>
+                            </div>
+                            <div class="text-sm text-gray-500">类型：AI音乐</div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=AI%20generated%20video%20scene&image_size=landscape_4_3" alt="作品封面" class="w-16 h-12 rounded object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">AI短剧 - 未来世界</div>
+                                <div class="text-sm text-gray-500">创建时间：2024-01-13 16:45</div>
+                            </div>
+                            <div class="text-sm text-gray-500">类型：AI短剧</div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=AI%20generated%20creative%20design&image_size=landscape_4_3" alt="作品封面" class="w-16 h-12 rounded object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">AI设计作品 - 品牌Logo</div>
+                                <div class="text-sm text-gray-500">创建时间：2024-01-12 11:20</div>
+                            </div>
+                            <div class="text-sm text-gray-500">类型：AI设计</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between px-6 py-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                    <span class="text-sm text-gray-500">共 128 件作品</span>
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors" onclick="closeModal('works-modal')">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="points-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeModal('points-modal')"></div>
+            <div class="relative bg-white rounded-xl shadow-xl transform transition-all max-w-2xl w-full mx-auto">
+                <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">点数明细</h3>
+                    <button type="button" class="close-modal-btn p-2 hover:bg-gray-100 rounded-full transition-colors" onclick="closeModal('points-modal')">
+                        <i class="fa fa-times text-gray-500"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6 p-4 bg-primary/10 rounded-lg">
+                        <span class="text-gray-700">当前剩余点数</span>
+                        <span class="text-2xl font-bold text-primary">5,680</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium">充值点数</div>
+                                <div class="text-sm text-gray-500">2024-01-10 10:00</div>
+                            </div>
+                            <div class="text-secondary font-medium">+10,000</div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium">AI绘画消耗</div>
+                                <div class="text-sm text-gray-500">2024-01-15 14:30</div>
+                            </div>
+                            <div class="text-danger font-medium">-50</div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium">AI音乐生成消耗</div>
+                                <div class="text-sm text-gray-500">2024-01-14 09:15</div>
+                            </div>
+                            <div class="text-danger font-medium">-30</div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium">AI短剧生成消耗</div>
+                                <div class="text-sm text-gray-500">2024-01-13 16:45</div>
+                            </div>
+                            <div class="text-danger font-medium">-200</div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium">邀请奖励</div>
+                                <div class="text-sm text-gray-500">2024-01-11 15:00</div>
+                            </div>
+                            <div class="text-secondary font-medium">+500</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end px-6 py-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors" onclick="closeModal('points-modal')">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="members-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeModal('members-modal')"></div>
+            <div class="relative bg-white rounded-xl shadow-xl transform transition-all max-w-2xl w-full mx-auto">
+                <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">成员列表</h3>
+                    <button type="button" class="close-modal-btn p-2 hover:bg-gray-100 rounded-full transition-colors" onclick="closeModal('members-modal')">
+                        <i class="fa fa-times text-gray-500"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="text-sm text-gray-600">团队：</span>
+                        <span class="text-sm font-medium text-primary" id="members-team-name">创新科技团队</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20male%20avatar%20portrait&image_size=square" alt="成员头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">张经理 <span class="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">管理员</span></div>
+                                <div class="text-sm text-gray-500">138****8888</div>
+                            </div>
+                            <div class="text-sm text-green-600">在线</div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20female%20avatar%20portrait&image_size=square" alt="成员头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">李设计师</div>
+                                <div class="text-sm text-gray-500">139****1111</div>
+                            </div>
+                            <div class="text-sm text-green-600">在线</div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20young%20male%20avatar&image_size=square" alt="成员头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">王开发</div>
+                                <div class="text-sm text-gray-500">137****2222</div>
+                            </div>
+                            <div class="text-sm text-gray-400">离线</div>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20creative%20female%20avatar&image_size=square" alt="成员头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div class="flex-1">
+                                <div class="font-medium">陈运营</div>
+                                <div class="text-sm text-gray-500">136****3333</div>
+                            </div>
+                            <div class="text-sm text-green-600">在线</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between px-6 py-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                    <span class="text-sm text-gray-500">共 15 名成员</span>
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors" onclick="closeModal('members-modal')">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openWorksModal(teamId, teamName) {
+            document.getElementById('works-team-name').textContent = teamName;
+            document.getElementById('works-modal').classList.remove('hidden');
+        }
+
+        function openPointsModal(teamId, teamName) {
+            document.getElementById('points-modal').classList.remove('hidden');
+        }
+
+        function openMembersModal(teamId, teamName) {
+            document.getElementById('members-team-name').textContent = teamName;
+            document.getElementById('members-modal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('[id$="-modal"]').forEach(function(modal) {
+                        modal.classList.add('hidden');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
