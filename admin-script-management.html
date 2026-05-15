@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剧本管理 - 塔猴管理后台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 自定义配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366F1',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .bg-gradient-ai {
+                background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            }
+            .bg-card-hover {
+                transition: all 0.3s ease;
+            }
+            .bg-card-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .sidebar-active {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-left: 4px solid #6366F1;
+            }
+            .table-row-hover:hover {
+                background-color: rgba(99, 102, 241, 0.05);
+                transition: background-color 0.2s ease;
+            }
+            .btn-hover {
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+            .btn-hover::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s ease;
+            }
+            .btn-hover:hover::before {
+                left: 100%;
+            }
+            .btn-hover:active {
+                transform: translateY(1px);
+            }
+            .modality-tag {
+                position: relative;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            .modality-tag::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transition: left 0.5s ease;
+            }
+            .modality-tag:hover::before {
+                left: 100%;
+            }
+            .modality-tag:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            /* 响应式设计 */
+            @media (max-width: 768px) {
+                /* 侧边栏响应式 */
+                aside {
+                    width: 100%;
+                    height: auto;
+                    position: relative;
+                }
+                
+                /* 主内容区域响应式 */
+                main {
+                    flex-direction: column;
+                }
+                
+                /* 表格响应式 */
+                .overflow-x-auto {
+                    overflow-x: auto;
+                }
+                
+                table {
+                    min-width: 640px;
+                }
+                
+                /* 搜索和筛选区域响应式 */
+                .grid-cols-1.md\:grid-cols-4 {
+                    grid-template-columns: 1fr;
+                }
+                
+                /* 批量操作按钮响应式 */
+                #batchActions {
+                    flex-direction: column;
+                    width: 100%;
+                }
+                
+                #batchActions button {
+                    width: 100%;
+                    margin-bottom: 0.5rem;
+                }
+                
+                /* 剧本详情侧边栏响应式 */
+                #scriptDetailsSidebar {
+                    width: 100%;
+                }
+                
+                /* 按钮响应式 */
+                .flex.space-x-3 {
+                    flex-direction: column;
+                    width: 100%;
+                }
+                
+                .flex.space-x-3 button {
+                    width: 100%;
+                    margin-bottom: 0.5rem;
+                }
+                
+                /* 顶部导航栏响应式 */
+                .flex-1.max-w-md.mx-8 {
+                    display: none;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                /* 页面标题响应式 */
+                h1.text-2xl {
+                    font-size: 1.5rem;
+                }
+                
+                /* 面包屑导航响应式 */
+                .text-sm.text-gray-500 {
+                    font-size: 0.75rem;
+                }
+                
+                /* 表格响应式 */
+                table {
+                    min-width: 500px;
+                }
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-dark min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- 品牌标志 -->
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bolt text-primary text-3xl"></i>
+                <h1 class="text-2xl font-bold text-primary">塔猴管理后台</h1>
+            </div>
+            
+            <!-- 中间搜索栏 -->
+            <div class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input type="text" placeholder="搜索配置、提示词、参数" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 右侧功能区 -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-all-300">
+                        <i class="fa fa-bell-o text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20admin%20avatar%20modern%20style&image_size=square" alt="管理员头像" class="w-8 h-8 rounded-full object-cover">
+                        <span class="font-medium">管理员</span>
+                        <i class="fa fa-caret-down text-gray-600"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-user mr-2"></i>个人资料
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors">
+                            <i class="fa fa-cog mr-2"></i>账户设置
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-colors text-danger">
+                            <i class="fa fa-sign-out mr-2"></i>退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="flex flex-1">
+        <!-- 内容区域 -->
+        <div class="flex-1 p-6 overflow-y-auto">
+            <!-- 页面标题和操作按钮 -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1">剧本管理</h1>
+                    <p class="text-gray-600">管理AI生成工具使用的剧本，支持剧本的添加、配置和状态管理</p>
+                </div>
+                <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover flex items-center" onclick="openAddScriptModal()">
+                    <i class="fa fa-plus mr-2"></i>
+                    添加剧本
+                </button>
+            </div>
+            
+            <!-- 搜索和筛选区域 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">剧本ID</label>
+                        <input type="text" placeholder="请输入ID" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">剧本名称</label>
+                        <div class="relative">
+                            <input type="text" placeholder="搜索剧本名称" class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">剧本标签</label>
+                        <input type="text" placeholder="搜索标签内容" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">剧本分类</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部分类</option>
+                            <option>现代爱情</option>
+                            <option>悬疑推理</option>
+                            <option>科幻冒险</option>
+                            <option>年代历史</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">状态</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>全部状态</option>
+                            <option>启用</option>
+                            <option>审核中</option>
+                            <option>已停用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <div class="flex space-x-3">
+                        <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover">
+                            重置
+                        </button>
+                        <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover">
+                            搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 剧本表格 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="width:60px;">
+                                    ID
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="width:80px;">
+                                    排序
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    封面
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    剧本名称
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标签</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
+                                    剧本描述
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    分类
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    状态
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('usageCount')" style="width:90px;">
+                                    使用次数
+                                    <i class="fa fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('updateTime')">
+                                    更新时间
+                                    <i class="fa fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                                    1001
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
+                                    <i class="fa fa-bars cursor-move mr-1"></i>1
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img class="w-10 h-10 rounded object-cover cursor-pointer" onclick="openCoverImageModal(this.src)" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cozy%20night%20coffee%20shop%20romantic%20book%20cover&image_size=square">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openScriptDetail('时光咖啡屋')">时光咖啡屋</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex space-x-1 flex-wrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">治愈</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">都市</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" title="在繁华都市的角落，有一家只在深夜营业的咖啡屋...">
+                                    在繁华都市的角落，有一家只在深夜营业的咖啡屋...
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    现代爱情
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="confirmStatusChange(this, 1001)">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium text-center">
+                                    128
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-10 14:22
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    编剧A
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-1">
+                                        <button class="text-primary hover:text-primary/80 btn-hover px-2 py-1 border border-primary/30 rounded text-xs" onclick="openManageScriptModal()">管理</button>
+                                        <button class="text-green-600 hover:text-green-800 btn-hover px-2 py-1 border border-green-600/30 rounded text-xs" onclick="openScriptTextEditor()">编辑原文</button>
+                                        <button class="text-red-600 hover:text-red-800 btn-hover px-2 py-1 border border-red-600/30 rounded text-xs">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                                    1002
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
+                                    <i class="fa fa-bars cursor-move mr-1"></i>2
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img class="w-10 h-10 rounded object-cover cursor-pointer" onclick="openCoverImageModal(this.src)" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=spaceship%20stars%20galaxy%20space%20adventure%20book%20cover&image_size=square">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openScriptDetail('星际迷航记')">星际迷航记</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex space-x-1 flex-wrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">冒险</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-100 text-cyan-800">未来</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" title="2387年人类踏上星际探索的伟大征程，探索者号即将启航...">
+                                    2387年人类踏上星际探索的伟大征程，探索者号即将启航...
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    科幻
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="confirmStatusChange(this, 1002)">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium text-center">
+                                    256
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-09 10:15
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    编剧B
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-1">
+                                        <button class="text-primary hover:text-primary/80 btn-hover px-2 py-1 border border-primary/30 rounded text-xs" onclick="openManageScriptModal()">管理</button>
+                                        <button class="text-green-600 hover:text-green-800 btn-hover px-2 py-1 border border-green-600/30 rounded text-xs" onclick="openScriptTextEditor()">编辑原文</button>
+                                        <button class="text-red-600 hover:text-red-800 btn-hover px-2 py-1 border border-red-600/30 rounded text-xs">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                                    1003
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
+                                    <i class="fa fa-bars cursor-move mr-1"></i>3
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img class="w-10 h-10 rounded object-cover cursor-pointer" onclick="openCoverImageModal(this.src)" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=dark%20mysterious%20castle%20in%20mist%20fantasy%20book%20cover&image_size=square">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openScriptDetail('幽影古堡')">幽影古堡</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex space-x-1 flex-wrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">惊悚</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">悬疑</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" title="苏格兰高地上的幽影古堡，深夜传来神秘脚步声，离奇死亡事件接连发生...">
+                                    苏格兰高地上的幽影古堡，深夜传来神秘脚步声，离奇死亡...
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    悬疑
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked onchange="confirmStatusChange(this, 1003)">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium text-center">
+                                    89
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-08 16:30
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    编剧C
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-1">
+                                        <button class="text-primary hover:text-primary/80 btn-hover px-2 py-1 border border-primary/30 rounded text-xs" onclick="openManageScriptModal()">管理</button>
+                                        <button class="text-green-600 hover:text-green-800 btn-hover px-2 py-1 border border-green-600/30 rounded text-xs" onclick="openScriptTextEditor()">编辑原文</button>
+                                        <button class="text-red-600 hover:text-red-800 btn-hover px-2 py-1 border border-red-600/30 rounded text-xs">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                                    1004
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
+                                    <i class="fa fa-bars cursor-move mr-1"></i>4
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img class="w-10 h-10 rounded object-cover cursor-pointer" onclick="openCoverImageModal(this.src)" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=1940s%20shanghai%20night%20club%20romance%20book%20cover&image_size=square">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openScriptDetail('海上繁花')">海上繁花</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex space-x-1 flex-wrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">复古</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">年代</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" title="1947年的上海，百乐门舞厅，上演着动人的爱情故事...">
+                                    1947年的上海，百乐门舞厅，上演着动人的爱情故事...
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    年代爱情
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" onchange="confirmStatusChange(this, 1004)">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium text-center">
+                                    312
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-07 11:20
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    编剧D
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-1">
+                                        <button class="text-primary hover:text-primary/80 btn-hover px-2 py-1 border border-primary/30 rounded text-xs" onclick="openManageScriptModal()">管理</button>
+                                        <button class="text-green-600 hover:text-green-800 btn-hover px-2 py-1 border border-green-600/30 rounded text-xs" onclick="openScriptTextEditor()">编辑原文</button>
+                                        <button class="text-red-600 hover:text-red-800 btn-hover px-2 py-1 border border-red-600/30 rounded text-xs">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                                    1005
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
+                                    <i class="fa fa-bars cursor-move mr-1"></i>5
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img class="w-10 h-10 rounded object-cover cursor-pointer" onclick="openCoverImageModal(this.src)" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=london%20detective%20mystery%20old%20city%20book%20cover&image_size=square">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-primary cursor-pointer hover:underline" onclick="openScriptDetail('神探记忆')">神探记忆</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex space-x-1 flex-wrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-200 text-slate-700">推理</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-700">经典</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" title="伦敦大剧院密室谋杀案，大侦探福尔摩斯的精彩推理...">
+                                    伦敦大剧院密室谋杀案，大侦探福尔摩斯的精彩推理...
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    推理
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" onchange="confirmStatusChange(this, 1005)">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium text-center">
+                                    45
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    2026-01-06 09:45
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    编剧E
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-1">
+                                        <button class="text-primary hover:text-primary/80 btn-hover px-2 py-1 border border-primary/30 rounded text-xs" onclick="openManageScriptModal()">管理</button>
+                                        <button class="text-green-600 hover:text-green-800 btn-hover px-2 py-1 border border-green-600/30 rounded text-xs" onclick="openScriptTextEditor()">编辑原文</button>
+                                        <button class="text-red-600 hover:text-red-800 btn-hover px-2 py-1 border border-red-600/30 rounded text-xs">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            上一页
+                        </a>
+                        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            下一页
+                        </a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                显示 <span class="font-medium">1</span> 到 <span class="font-medium">5</span> 共 <span class="font-medium">12</span> 条记录
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">上一页</span>
+                                    <i class="fa fa-chevron-left"></i>
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
+                                    1
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    2
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    3
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">下一页</span>
+                                    <i class="fa fa-chevron-right"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            
+
+        </div>
+    </main>
+    
+    <!-- 停用模型确认弹窗 -->
+    <div id="deactivateScriptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold">确认停用</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-700 mb-4">您确定要停用这个模型吗？停用后该模型将不再被系统使用。</p>
+                <p class="text-sm text-gray-500">模型：GPT-4</p>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <button id="cancelDeactivateScript" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover">
+                    取消
+                </button>
+                <button class="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700 transition-all-300 btn-hover">
+                    停用
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 启用模型确认弹窗 -->
+    <div id="activateScriptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold">确认启用</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-700 mb-4">您确定要启用这个模型吗？启用后该模型将从已停用状态变为启用状态，并被系统使用。</p>
+                <p class="text-sm text-gray-500">模型：GPT-3.5</p>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <button id="cancelActivateModel" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover">
+                    取消
+                </button>
+                <button class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-all-300 btn-hover">
+                    启用
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 剧本详情侧边栏 -->
+    <div id="scriptDetailsSidebar" class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="h-full flex flex-col">
+            <!-- 侧边栏头部 -->
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold" id="scriptDetailsTitle">剧本详情</h3>
+                <button id="closeModelDetails" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- 侧边栏内容 -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6">
+                    <!-- 基本信息 -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">基本信息</h4>
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">剧本名称：</span>
+                                <span class="font-medium" id="scriptDetailsName">GPT-4</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">分类：</span>
+                                <span id="scriptDetailsProvider">OpenAI</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">描述：</span>
+                                <span id="scriptDetailsVersion">v1.0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">状态：</span>
+                                <span id="scriptDetailsStatus">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        启用
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 标签信息 -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">标签</h4>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="flex flex-wrap gap-2" id="scriptDetailsModalities">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    文本
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 定价信息 -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">定价信息</h4>
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">消耗点数：</span>
+                                <div class="flex items-center">
+                                    <input type="number" id="scriptDetailsPricing" value="0.5" step="0.1" min="0" class="w-24 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                                    <span class="ml-2 text-sm text-gray-500">点数/秒</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 使用统计 -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">使用统计</h4>
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">总调用次数：</span>
+                                <span class="font-medium">156,789</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">平均响应时间：</span>
+                                <span class="font-medium">2.3s</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">最近调用时间：</span>
+                                <span>2026-04-21 15:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- API配置 -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">API配置</h4>
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div>
+                                <span class="text-gray-600 block mb-1">API密钥：</span>
+                                <span class="bg-gray-200 px-3 py-2 rounded font-mono text-sm">sk-********************</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600 block mb-1">API端点：</span>
+                                <span class="bg-gray-200 px-3 py-2 rounded font-mono text-sm text-xs">https://api.openai.com/v1/chat/completions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 侧边栏底部 -->
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex space-x-3" id="scriptDetailsButtonsView">
+                    <button class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover hidden">
+                            <i class="fa fa-edit mr-2"></i>编辑
+                        </button>
+                        <button class="flex-1 bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover hidden">
+                            <i class="fa fa-refresh mr-2"></i>同步
+                        </button>
+                </div>
+                <div class="flex space-x-3 hidden" id="scriptDetailsButtonsEdit">
+                    <button class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover" onclick="closeModelDetails()">
+                        <i class="fa fa-times mr-2"></i>取消
+                    </button>
+                    <button class="flex-1 bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-all-300 btn-hover">
+                        <i class="fa fa-save mr-2"></i>保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 遮罩层 -->
+    <div id="scriptDetailsOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    
+    <!-- JavaScript -->
+    <script>
+        // 停用按钮点击事件
+        document.querySelectorAll('button').forEach(function(button) {
+            if (button.textContent.trim() === '停用') {
+                button.addEventListener('click', function() {
+                    document.getElementById('deactivateScriptModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 取消停用按钮点击事件
+        document.getElementById('cancelDeactivateScript').addEventListener('click', function() {
+            document.getElementById('deactivateScriptModal').classList.add('hidden');
+        });
+        
+        // 点击停用标签框外部关闭
+        document.getElementById('deactivateScriptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 启用按钮点击事件
+        document.querySelectorAll('button').forEach(function(button) {
+            if (button.textContent.trim() === '启用') {
+                button.addEventListener('click', function() {
+                    document.getElementById('activateScriptModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // 取消启用按钮点击事件
+        document.getElementById('cancelActivateModel').addEventListener('click', function() {
+            document.getElementById('activateScriptModal').classList.add('hidden');
+        });
+        
+        // 点击启用标签框外部关闭
+        document.getElementById('activateScriptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // 剧本详情侧边栏功能
+        function openScriptDetails(modelName, mode) {
+            // 打开侧边栏
+            document.getElementById('scriptDetailsSidebar').classList.remove('translate-x-full');
+            document.getElementById('scriptDetailsOverlay').classList.remove('hidden');
+            
+            // 根据模式切换UI
+            if (mode === 'edit') {
+                document.getElementById('scriptDetailsButtonsView').classList.add('hidden');
+                document.getElementById('scriptDetailsButtonsEdit').classList.remove('hidden');
+                document.getElementById('scriptDetailsPricing').disabled = false;
+                document.getElementById('scriptDetailsPricing').classList.remove('bg-gray-100');
+            } else {
+                document.getElementById('scriptDetailsButtonsView').classList.add('hidden');
+                document.getElementById('scriptDetailsButtonsEdit').classList.add('hidden');
+                document.getElementById('scriptDetailsPricing').disabled = true;
+                document.getElementById('scriptDetailsPricing').classList.add('bg-gray-100');
+            }
+            
+            // 根据剧本名称更新详情
+            updateModelDetails(modelName);
+        }
+        
+        function closeModelDetails() {
+            // 关闭侧边栏
+            document.getElementById('scriptDetailsSidebar').classList.add('translate-x-full');
+            document.getElementById('scriptDetailsOverlay').classList.add('hidden');
+        }
+        
+        // 关闭按钮点击事件
+        document.getElementById('closeModelDetails').addEventListener('click', closeModelDetails);
+        
+        // 点击遮罩层关闭
+        document.getElementById('scriptDetailsOverlay').addEventListener('click', closeModelDetails);
+        
+        // 更新剧本详情
+        function updateModelDetails(modelName) {
+            // 这里可以根据实际情况从服务器获取剧本详情
+            // 现在使用模拟数据
+            const scriptData = {
+                'GPT-4': {
+                    name: 'GPT-4',
+                    provider: 'OpenAI',
+                    version: 'v1.0',
+                    status: '启用',
+                    statusClass: 'bg-green-100 text-green-800',
+                    modalities: [
+                        { name: '文本', class: 'bg-blue-100 text-blue-800' }
+                    ],
+                    pricing: 0.5,
+                    usedQuota: '12,543'
+                },
+                'Stable Diffusion XL': {
+                    name: 'Stable Diffusion XL',
+                    provider: 'Stability AI',
+                    version: 'v1.0',
+                    status: '启用',
+                    statusClass: 'bg-green-100 text-green-800',
+                    modalities: [
+                        { name: '图像', class: 'bg-yellow-100 text-yellow-800' },
+                        { name: '视频', class: 'bg-red-100 text-red-800' }
+                    ],
+                    pricing: 0.8,
+                    usedQuota: '8,765'
+                },
+                'MusicGen': {
+                    name: 'MusicGen',
+                    provider: 'Meta',
+                    version: 'v1.0',
+                    status: '启用',
+                    statusClass: 'bg-green-100 text-green-800',
+                    modalities: [
+                        { name: '音频', class: 'bg-purple-100 text-purple-800' }
+                    ],
+                    pricing: 0.3,
+                    usedQuota: '4,321'
+                },
+                'GPT-3.5': {
+                    name: 'GPT-3.5',
+                    provider: 'OpenAI',
+                    version: 'v1.0',
+                    status: '已停用',
+                    statusClass: 'bg-red-100 text-red-800',
+                    modalities: [
+                        { name: '文本', class: 'bg-blue-100 text-blue-800' }
+                    ],
+                    pricing: 0.2,
+                    usedQuota: '2,156'
+                },
+                'DALL-E 3': {
+                    name: 'DALL-E 3',
+                    provider: 'OpenAI',
+                    version: 'v1.0',
+                    status: '已停用',
+                    statusClass: 'bg-red-100 text-red-800',
+                    modalities: [
+                        { name: '图像', class: 'bg-yellow-100 text-yellow-800' }
+                    ],
+                    pricing: 0.6,
+                    usedQuota: '1,876'
+                }
+            };
+            
+            const data = scriptData[modelName];
+            if (data) {
+                // 更新基本信息
+                document.getElementById('scriptDetailsName').textContent = data.name;
+                document.getElementById('scriptDetailsProvider').textContent = data.provider;
+                document.getElementById('scriptDetailsVersion').textContent = data.version;
+                
+                // 更新状态
+                document.getElementById('scriptDetailsStatus').innerHTML = `
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${data.statusClass}">
+                        ${data.status}
+                    </span>
+                `;
+                
+                // 更新标签
+                let modalitiesHtml = '';
+                data.modalities.forEach(modality => {
+                    modalitiesHtml += `
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${modality.class}">
+                            ${modality.name}
+                        </span>
+                    `;
+                });
+                document.getElementById('scriptDetailsModalities').innerHTML = modalitiesHtml;
+                
+                // 更新定价
+                document.getElementById('scriptDetailsPricing').value = data.pricing;
+            }
+        }
+        
+        // 更新定价
+        function updatePricing(modelName, value) {
+            console.log(`更新模型 ${modelName} 的定价为: ${value} 点数/秒`);
+        }
+        
+        // 模型状态变更二次确认
+        let pendingStatusModel = null;
+        let pendingCheckbox = null;
+        
+        // 绑定状态切换事件
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.model-status-toggle').forEach(function(label) {
+                const checkbox = label.querySelector('input[type="checkbox"]');
+                
+                checkbox.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const modelName = label.dataset.model;
+                    const currentStatus = label.dataset.currentStatus;
+                    const newStatus = currentStatus === '启用' ? '已停用' : '启用';
+                    
+                    pendingStatusModel = {
+                        name: modelName,
+                        label: label,
+                        currentStatus: currentStatus,
+                        newStatus: newStatus
+                    };
+                    pendingCheckbox = checkbox;
+                    
+                    // 更新确认弹窗中的模型名并显示
+                    if (newStatus === '已停用') {
+                        document.querySelector('#deactivateScriptModal p.text-sm').textContent = `模型：${modelName}`;
+                        document.getElementById('deactivateScriptModal').classList.remove('hidden');
+                    } else {
+                        document.querySelector('#activateScriptModal p.text-sm').textContent = `模型：${modelName}`;
+                        document.getElementById('activateScriptModal').classList.remove('hidden');
+                    }
+                });
+            });
+            
+            // 确认停用按钮
+            const deactivateModal = document.getElementById('deactivateScriptModal');
+            deactivateModal.querySelectorAll('button')[1].addEventListener('click', function() {
+                if (pendingStatusModel) {
+                    applyStatusChange(pendingStatusModel, false);
+                    deactivateModal.classList.add('hidden');
+                }
+            });
+            
+            // 确认启用按钮
+            const activateModal = document.getElementById('activateScriptModal');
+            activateModal.querySelectorAll('button')[1].addEventListener('click', function() {
+                if (pendingStatusModel) {
+                    applyStatusChange(pendingStatusModel, true);
+                    activateModal.classList.add('hidden');
+                }
+            });
+        });
+        
+        function applyStatusChange(scriptData, isChecked) {
+            const label = scriptData.label;
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            const statusText = label.querySelector('span.ml-3');
+            
+            checkbox.checked = isChecked;
+            label.dataset.currentStatus = scriptData.newStatus;
+            label.closest('tr').dataset.status = scriptData.newStatus;
+            
+            if (statusText) {
+                statusText.textContent = scriptData.newStatus;
+            }
+            
+            pendingStatusModel = null;
+            pendingCheckbox = null;
+        }
+        
+
+        
+        // 表格排序功能
+        let sortDirection = {};
+        
+        function sortTable(column) {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // 切换排序方向
+            if (!sortDirection[column] || sortDirection[column] === 'desc') {
+                sortDirection[column] = 'asc';
+            } else {
+                sortDirection[column] = 'desc';
+            }
+            
+            // 排序行
+            rows.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch (column) {
+                    case 'name':
+                        aValue = a.dataset.name;
+                        bValue = b.dataset.name;
+                        break;
+                    case 'provider':
+                        aValue = a.dataset.provider;
+                        bValue = b.dataset.provider;
+                        break;
+                    case 'status':
+                        aValue = a.dataset.status === '启用' ? 1 : 0;
+                        bValue = b.dataset.status === '启用' ? 1 : 0;
+                        break;
+                    case 'usedQuota':
+                        aValue = parseInt(a.dataset.usedQuota);
+                        bValue = parseInt(b.dataset.usedQuota);
+                        break;
+                    case 'updateTime':
+                        aValue = new Date(a.dataset.updateTime);
+                        bValue = new Date(b.dataset.updateTime);
+                        break;
+                    default:
+                        return 0;
+                }
+                
+                if (aValue < bValue) {
+                    return sortDirection[column] === 'asc' ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortDirection[column] === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+            
+            // 重新排列行
+            rows.forEach(row => tbody.appendChild(row));
+            
+            // 更新排序图标
+            updateSortIcons(column);
+        }
+        
+        function updateSortIcons(activeColumn) {
+            const headers = document.querySelectorAll('th');
+            headers.forEach(header => {
+                const icon = header.querySelector('i');
+                if (icon) {
+                    if (header.getAttribute('onclick') && header.getAttribute('onclick').includes(activeColumn)) {
+                        // 更新活动列的图标
+                        if (sortDirection[activeColumn] === 'asc') {
+                            icon.className = 'fa fa-sort-up ml-1';
+                        } else {
+                            icon.className = 'fa fa-sort-down ml-1';
+                        }
+                    } else {
+                        // 重置其他列的图标
+                        if (icon.className.includes('fa-sort')) {
+                            icon.className = 'fa fa-sort ml-1';
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 添加剧本弹窗相关函数
+        function openAddScriptModal() {
+            document.getElementById('addScriptModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeAddScriptModal() {
+            document.getElementById('addScriptModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        function handleCoverUpload(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('coverPreview').src = e.target.result;
+                    document.getElementById('coverPreview').classList.remove('hidden');
+                    document.getElementById('coverPreviewArea').classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function toggleTagDropdown(e) {
+            e.stopPropagation();
+            var dropdown = document.getElementById('tagDropdown');
+            dropdown.classList.toggle('hidden');
+            if (!dropdown.classList.contains('hidden')) {
+                setTimeout(function() { document.getElementById('tagSearchInput').focus(); }, 100);
+            }
+        }
+        
+        document.addEventListener('click', function(e) {
+            var dropdown = document.getElementById('tagDropdown');
+            var toggle = document.getElementById('tagSelectorToggle');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                if (!toggle.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+        
+        function filterTags(keyword) {
+            keyword = keyword.toLowerCase();
+            var options = document.querySelectorAll('#allTagsOptions label');
+            for (var i = 0; i < options.length; i++) {
+                var text = options[i].textContent.toLowerCase();
+                options[i].style.display = text.indexOf(keyword) >= 0 ? 'flex' : 'none';
+            }
+        }
+        
+        function updateSelectedTags() {
+            var checkboxes = document.querySelectorAll('.tag-checkbox:checked');
+            var tags = [];
+            for (var i = 0; i < checkboxes.length; i++) {
+                tags.push(checkboxes[i].value);
+            }
+            renderSelectedTagsDisplay(tags);
+        }
+        
+        function renderSelectedTagsDisplay(tags) {
+            var display = document.getElementById('selectedTagsDisplay');
+            var placeholder = document.getElementById('selectedTagsPlaceholder');
+            if (tags.length === 0) {
+                display.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                return;
+            }
+            placeholder.classList.add('hidden');
+            display.classList.remove('hidden');
+            display.innerHTML = '';
+            var colors = ['bg-blue-100 text-blue-800', 'bg-green-100 text-green-800', 'bg-yellow-100 text-yellow-800', 'bg-orange-100 text-orange-800', 'bg-purple-100 text-purple-800', 'bg-pink-100 text-pink-800'];
+            for (var i = 0; i < tags.length; i++) {
+                var span = document.createElement('span');
+                span.className = 'px-2 py-0.5 rounded text-xs font-medium ' + colors[i % colors.length];
+                span.textContent = tags[i];
+                display.appendChild(span);
+            }
+        }
+        
+        function saveScript() {
+            alert('保存剧本功能（演示）\n在这里可以编写提交表单数据的逻辑');
+            closeAddScriptModal();
+        }
+        
+        function openCoverImageModal(src) {
+            document.getElementById('coverImagePreview').src = src;
+            document.getElementById('coverImageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeCoverImageModal() {
+            document.getElementById('coverImageModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        function openScriptDetail(name) {
+            openScriptDetailFull();
+        }
+        
+        var pendingStatusCheckbox = null;
+        var pendingScriptId = null;
+        
+        function confirmStatusChange(checkbox, scriptId) {
+            pendingStatusCheckbox = checkbox;
+            pendingScriptId = scriptId;
+            document.getElementById('statusConfirmModal').classList.remove('hidden');
+        }
+        
+        function confirmStatusYes() {
+            document.getElementById('statusConfirmModal').classList.add('hidden');
+            var newStatus = pendingStatusCheckbox.checked ? '启用' : '停用';
+            var parentRow = pendingStatusCheckbox.closest('tr');
+            var delBtn = null;
+            if (parentRow) {
+                delBtn = parentRow.querySelector('button:last-child');
+            }
+            if (!delBtn) {
+                delBtn = document.getElementById('delete-btn-' + pendingScriptId);
+            }
+            if (delBtn) {
+                if (pendingStatusCheckbox.checked) {
+                    delBtn.style.display = 'none';
+                } else {
+                    delBtn.style.display = 'inline-block';
+                }
+            }
+            alert('剧本状态更新成功！新状态: ' + newStatus);
+        }
+        
+        function confirmStatusNo() {
+            pendingStatusCheckbox.checked = !pendingStatusCheckbox.checked;
+            document.getElementById('statusConfirmModal').classList.add('hidden');
+        }
+        
+        var currentModalData = { scriptName: '', scriptDesc: '', category: '' };
+        
+        function openManageScriptModal() {
+            currentModalData = { scriptName: '时光咖啡屋', scriptDesc: '温馨治愈的现代爱情故事...', category: '现代爱情' };
+            document.getElementById('manageScriptModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeManageScriptModal() {
+            document.getElementById('manageScriptModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        function saveManageScript() {
+            alert('保存剧本基础信息成功！');
+            closeManageScriptModal();
+        }
+        
+        function openScriptDetailFull() {
+            currentModalData = { scriptName: '时光咖啡屋', scriptDesc: '温馨治愈的现代爱情故事，讲述在繁华都市的角落，有一家只在深夜营业的咖啡屋...', category: '现代爱情' };
+            document.getElementById('scriptInfoTabBtn').click();
+            document.getElementById('scriptDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeScriptDetailModal() {
+            document.getElementById('scriptDetailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        function switchScriptDetailTab(tabName) {
+            var infoTab = document.getElementById('infoContentTab');
+            var textTab = document.getElementById('textContentTab');
+            var infoBtn = document.getElementById('scriptInfoTabBtn');
+            var textBtn = document.getElementById('scriptDetailTabBtn');
+            
+            if (tabName === 'info') {
+                infoTab.classList.remove('hidden');
+                textTab.classList.add('hidden');
+                infoBtn.classList.add('border-b-2', 'border-primary', 'text-primary');
+                infoBtn.classList.remove('text-gray-500');
+                textBtn.classList.remove('border-b-2', 'border-primary', 'text-primary');
+                textBtn.classList.add('text-gray-500');
+            } else {
+                infoTab.classList.add('hidden');
+                textTab.classList.remove('hidden');
+                textBtn.classList.add('border-b-2', 'border-primary', 'text-primary');
+                textBtn.classList.remove('text-gray-500');
+                infoBtn.classList.remove('border-b-2', 'border-primary', 'text-primary');
+                infoBtn.classList.add('text-gray-500');
+            }
+        }
+        
+        function openScriptTextEditor() {
+            document.getElementById('scriptTextEditorModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeScriptTextEditor() {
+            document.getElementById('scriptTextEditorModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        function saveScriptTextEditor() {
+            alert('保存剧本原文成功！');
+            closeScriptTextEditor();
+        }
+        
+        function jumpToSection(sectionId) {
+            var el = document.getElementById(sectionId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var allStatusToggles = document.querySelectorAll('td input[type="checkbox"].sr-only.peer');
+            for (var idx = 0; idx < allStatusToggles.length; idx++) {
+                var chk = allStatusToggles[idx];
+                var parentRow = chk.closest('tr');
+                if (parentRow) {
+                    var delBtn = parentRow.querySelector('button:last-child');
+                    if (delBtn && delBtn.textContent.indexOf('删除') >= 0) {
+                        delBtn.setAttribute('id', 'delete-btn-auto-' + idx);
+                        if (chk.checked) {
+                            delBtn.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <!-- 添加剧本标签框 -->
+    <div id="addScriptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold">添加剧本</h3>
+                <button onclick="closeAddScriptModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">剧本名称 <span class="text-red-500">*</span></label>
+                        <input type="text" required id="scriptName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入剧本名称">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">剧本描述</label>
+                        <textarea id="scriptDesc" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请简要描述剧本内容"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">剧本分类 <span class="text-red-500">*</span></label>
+                        <select required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">请选择剧本分类</option>
+                            <option>现代爱情</option>
+                            <option>悬疑推理</option>
+                            <option>科幻冒险</option>
+                            <option>年代历史</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">封面图片 <span class="text-red-500">*</span> <span class="text-gray-500 text-xs">（仅支持本地上传）</span></label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer" onclick="document.getElementById('coverImageUpload').click()">
+                            <input type="file" id="coverImageUpload" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="handleCoverUpload(this)">
+                            <div id="coverPreviewArea">
+                                <i class="fa fa-cloud-upload text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500 text-sm">点击或拖拽上传封面图片</p>
+                            </div>
+                            <img id="coverPreview" class="hidden mx-auto max-h-40 rounded-lg shadow">
+                        </div>
+                        <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                            <p class="font-medium mb-1"><i class="fa fa-info-circle mr-1"></i>图片规格说明</p>
+                            <ul class="space-y-1 text-xs text-blue-700">
+                                <li>• 建议尺寸：512×1024 像素</li>
+                                <li>• 推荐比例：宽高 <b>1:2</b>（竖版海报标准）</li>
+                                <li>• 文件大小：不超过 5MB</li>
+                                <li>• 支持格式：JPG、PNG、WebP</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">标签</label>
+                        <div class="relative">
+                            <div id="tagSelectorToggle" class="w-full border border-gray-300 rounded-lg px-3 py-2 cursor-pointer flex justify-between items-center bg-white" onclick="toggleTagDropdown(event)">
+                                <span id="selectedTagsPlaceholder" class="text-gray-400">请选择标签（可多选，支持搜索）</span>
+                                <div id="selectedTagsDisplay" class="flex flex-wrap gap-1 hidden"></div>
+                                <i class="fa fa-chevron-down text-gray-400 ml-2"></i>
+                            </div>
+                            <div id="tagDropdown" class="hidden absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+                                <div class="p-2 border-b border-gray-100">
+                                    <input type="text" id="tagSearchInput" class="w-full border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="搜索标签..." oninput="filterTags(this.value)">
+                                </div>
+                                <div id="allTagsOptions" class="p-1">
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="治愈" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 治愈
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="都市" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 都市
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="冒险" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 冒险
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="未来" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 未来
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="惊悚" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 惊悚
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="悬疑" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 悬疑
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="复古" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 复古
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="年代" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 年代
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="推理" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 推理
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="经典" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 经典
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="搞笑" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 搞笑
+                                    </label>
+                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                        <input type="checkbox" value="热血" class="tag-checkbox mr-2" onchange="updateSelectedTags()"> 热血
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="closeAddScriptModal()" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">
+                    取消
+                </button>
+                <button onclick="saveScript()" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 封面大图预览模态框 -->
+    <div id="coverImageModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden" onclick="closeCoverImageModal()">
+        <div class="relative max-w-2xl max-h-[90vh]">
+            <button class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300 z-10" onclick="closeCoverImageModal()">
+                <i class="fa fa-times"></i>
+            </button>
+            <img id="coverImagePreview" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl">
+        </div>
+    </div>
+    <!-- 状态变更二次确认弹窗 -->
+    <div id="statusConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">确认变更状态</h3>
+                <p class="text-gray-600 text-sm">确定要变更该剧本的启用/停用状态吗？</p>
+            </div>
+            <div class="flex justify-center space-x-3">
+                <button onclick="confirmStatusNo()" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-50">
+                    取消
+                </button>
+                <button onclick="confirmStatusYes()" class="bg-primary text-white font-medium py-2 px-6 rounded-lg hover:bg-primary/90">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 剧本管理弹窗（修改基础信息） -->
+    <div id="manageScriptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold">管理剧本</h3>
+                <button onclick="closeManageScriptModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">剧本名称 <span class="text-red-500">*</span></label>
+                        <input type="text" required value="时光咖啡屋" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">剧本描述</label>
+                        <textarea rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">温馨治愈的现代爱情故事...</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">剧本分类 <span class="text-red-500">*</span></label>
+                        <select required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">请选择剧本分类</option>
+                            <option selected>现代爱情</option>
+                            <option>悬疑推理</option>
+                            <option>科幻冒险</option>
+                            <option>年代历史</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">封面图片 <span class="text-red-500">*</span> <span class="text-gray-500 text-xs">（仅支持本地上传）</span></label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cozy%20night%20coffee%20shop%20romantic%20book%20cover&image_size=square" class="w-20 h-40 mx-auto rounded-lg object-cover mb-3" style="aspect-ratio: 1/2;">
+                            <p class="text-gray-500 text-sm">点击或拖拽更换封面图片</p>
+                        </div>
+                        <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                            <p class="font-medium mb-1"><i class="fa fa-info-circle mr-1"></i>图片规格说明</p>
+                            <ul class="space-y-1 text-xs text-blue-700">
+                                <li>• 建议尺寸：512×1024 像素</li>
+                                <li>• 推荐比例：宽高 <b>1:2</b>（竖版海报标准）</li>
+                                <li>• 文件大小：不超过 5MB</li>
+                                <li>• 支持格式：JPG、PNG、WebP</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">标签</label>
+                        <div class="relative">
+                            <div id="tagSelectorToggleM" class="w-full border border-gray-300 rounded-lg px-3 py-2 cursor-pointer flex justify-between items-center bg-white">
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">治愈</span>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">都市</span>
+                                </div>
+                                <i class="fa fa-chevron-down text-gray-400 ml-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="closeManageScriptModal()" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300">取消</button>
+                <button onclick="saveManageScript()" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300">保存</button>
+            </div>
+        </div>
+    </div>
+    <!-- 剧本详情全屏弹窗（双Tab切换） -->
+    <div id="scriptDetailModal" class="fixed inset-0 bg-white z-50 hidden flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 shadow-sm">
+            <h2 class="text-xl font-bold pl-4">剧本详情</h2>
+            <button onclick="closeScriptDetailModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center">
+                <i class="fa fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="flex border-b border-gray-200 bg-gray-50">
+            <button id="scriptInfoTabBtn" class="px-6 py-3 text-sm font-medium border-b-2 border-primary text-primary whitespace-nowrap" onclick="switchScriptDetailTab('info')">基础信息</button>
+            <button id="scriptDetailTabBtn" class="px-6 py-3 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchScriptDetailTab('text')">剧本原文内容</button>
+        </div>
+        <div id="infoContentTab" class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="grid gap-6">
+                    <div class="flex items-start space-x-6">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cozy%20night%20coffee%20shop%20romantic%20book%20cover&image_size=square" class="w-32 h-48 rounded-lg shadow object-cover" style="aspect-ratio: 1/2;">
+                        <div class="flex-1 space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-2xl font-bold">时光咖啡屋</h3>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">启用</span>
+                            </div>
+                            <p class="text-gray-600">在繁华都市的角落，有一家只在深夜营业的咖啡屋，讲述着一个关于时间、记忆和真爱的温馨治愈故事。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">治愈</span>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">都市</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">剧本ID</span>
+                            <p class="font-medium mt-1 font-mono">1001</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">排序</span>
+                            <p class="font-medium mt-1">1</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">分类</span>
+                            <p class="font-medium mt-1">现代爱情</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">使用次数</span>
+                            <p class="font-medium mt-1">128 次</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">字数</span>
+                            <p class="font-medium mt-1">12,850 字</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">状态</span>
+                            <p class="font-medium mt-1 text-green-600">启用</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">操作人</span>
+                            <p class="font-medium mt-1">编剧A</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">更新时间</span>
+                            <p class="font-medium mt-1">2026-01-10 14:22</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="textContentTab" class="flex-1 overflow-hidden hidden flex">
+            <div class="w-56 border-r border-gray-200 bg-gray-50 overflow-y-auto flex-shrink-0">
+                <div class="p-3 text-xs text-gray-500 uppercase tracking-wide border-b border-gray-200 font-medium">
+                    剧本目录（点击跳转）
+                </div>
+                <div class="p-2">
+                    <div onclick="jumpToSection('section0-read')" class="cursor-pointer hover:bg-blue-100 px-3 py-2 rounded-lg font-medium text-sm mb-1 bg-blue-50 text-blue-700">
+                        <i class="fa fa-bookmark-o mr-2 text-blue-500"></i>封面
+                    </div>
+                    <div onclick="jumpToSection('section1-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>第一幕：初遇
+                    </div>
+                    <div class="pl-2">
+                        <div onclick="jumpToSection('section1-1-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景1：深夜咖啡屋
+                        </div>
+                        <div onclick="jumpToSection('section1-2-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景2：凌晨地铁站
+                        </div>
+                    </div>
+                    <div onclick="jumpToSection('section2-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>第二幕：重逢
+                    </div>
+                    <div class="pl-2">
+                        <div onclick="jumpToSection('section2-1-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景1：三年后
+                        </div>
+                        <div onclick="jumpToSection('section2-2-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景2：雨巷
+                        </div>
+                    </div>
+                    <div onclick="jumpToSection('section3-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>第三幕：抉择
+                    </div>
+                    <div onclick="jumpToSection('section4-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>尾声
+                    </div>
+                    <div onclick="jumpToSection('section5-read')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>人物设定表
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto bg-white">
+                <div class="max-w-3xl mx-auto p-6 prose prose-sm max-w-none text-gray-700 leading-relaxed">
+                    <h5 id="section0-read" class="font-bold text-lg mb-4 pb-2 border-b">【时光咖啡屋】</h5>
+                    <p class="text-gray-500 italic text-center py-4 mb-6 bg-gray-50 rounded-lg">--- 阅读模式 ---</p>
+                    
+                    <h6 id="section1-read" class="font-bold mt-8 mb-4 text-base">第一幕：初遇</h6>
+                    
+                    <h6 id="section1-1-read" class="font-semibold mt-6 mb-3">场景1：深夜咖啡屋</h6>
+                    <p>夜深了，城市的霓虹渐渐褪去，只有街角的那爿咖啡屋还亮着暖黄色的灯。玻璃门推开时风铃轻响，空气中弥漫着咖啡豆的香气...</p>
+                    <p>女主：（搓了搓冻红的手）老板，一杯热拿铁，谢谢。</p>
+                    <p>老板：（从吧台后抬起头，露出温和的笑容）还是老位置？</p>
+                    <p>女主：（点点头走到靠窗的位置坐下）嗯，今晚还是要赶稿。</p>
+                    <p>窗外，雪花开始纷纷扬扬地飘落。咖啡屋墙上的老钟滴答滴答走着...</p>
+                    
+                    <h6 id="section1-2-read" class="font-semibold mt-6 mb-3">场景2：凌晨地铁站</h6>
+                    <p>女主抱着笔记本电脑匆匆走进地铁站。末班车的站台上寥寥无几。她哈了口气搓了搓手，回想着刚才在咖啡屋邂逅的那个同样在赶稿的神秘男子...</p>
+                    
+                    <h6 id="section2-read" class="font-bold mt-8 mb-4 text-base">第二幕：重逢</h6>
+                    
+                    <h6 id="section2-1-read" class="font-semibold mt-6 mb-3">场景1：三年后</h6>
+                    <p>还是同样的咖啡屋，同样靠窗的位置。女主已经成了畅销书作家，今天她要见的是自己的新责编...</p>
+                    
+                    <h6 id="section2-2-read" class="font-semibold mt-6 mb-3">场景2：雨巷</h6>
+                    <p>江南的雨巷，青石板上滴答作响。两人共撑一把伞，空气中有种微妙的气息在流动...</p>
+                    
+                    <h6 id="section3-read" class="font-bold mt-8 mb-4 text-base">第三幕：抉择</h6>
+                    <p>女主站在人生的十字路口：一边是等待多年的恋人，一边是给了自己全新机会的出版人...</p>
+                    
+                    <h6 id="section4-read" class="font-bold mt-8 mb-4 text-base">尾声</h6>
+                    <p>还是那间咖啡屋，推门时风铃依旧轻晃。不同的是，女主身边多了一个可以依靠的肩膀。阳光落在两人交握的手上，岁月静好，现世安稳...</p>
+                    
+                    <h6 id="section5-read" class="font-bold mt-8 mb-4 text-base">人物设定表</h6>
+                    <ul class="list-disc list-inside space-y-2 text-sm">
+                        <li>林小雨：女主角，28岁，性格敏感内向的女作家</li>
+                        <li>陈默轩：男主角，30岁，低调神秘的建筑师</li>
+                        <li>苏晚晴：女二号，29岁，干练的出版社编辑</li>
+                        <li>咖啡店老板：50岁左右，永远挂着微笑的人生观察者</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 剧本原文编辑全屏弹窗（左侧目录树+右侧编辑） -->
+    <div id="scriptTextEditorModal" class="fixed inset-0 bg-white z-50 hidden flex flex-col">
+        <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 shadow-sm">
+            <div class="flex items-center">
+                <h2 class="text-lg font-bold">时光咖啡屋 - 剧本原文</h2>
+                <span class="ml-3 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">编辑模式</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="closeScriptTextEditor()" class="text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 text-sm">取消</button>
+                <button onclick="saveScriptTextEditor()" class="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-sm">保存剧本原文</button>
+                <button onclick="closeScriptTextEditor()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center ml-2">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-hidden flex">
+            <div class="w-56 border-r border-gray-200 bg-gray-50 overflow-y-auto flex-shrink-0">
+                <div class="p-3 text-xs text-gray-500 uppercase tracking-wide border-b border-gray-200 font-medium">
+                    剧本目录（点击跳转）
+                </div>
+                <div class="p-2">
+                    <div onclick="jumpToSection('section0')" class="cursor-pointer hover:bg-blue-100 px-3 py-2 rounded-lg font-medium text-sm mb-1 bg-blue-50 text-blue-700">
+                        <i class="fa fa-bookmark-o mr-2 text-blue-500"></i>封面
+                    </div>
+                    <div onclick="jumpToSection('section1')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>第一幕：初遇
+                    </div>
+                    <div class="pl-2">
+                        <div onclick="jumpToSection('section1-1')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景1：深夜咖啡屋
+                        </div>
+                        <div onclick="jumpToSection('section1-2')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景2：凌晨地铁站
+                        </div>
+                    </div>
+                    <div onclick="jumpToSection('section2')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>第二幕：重逢
+                    </div>
+                    <div class="pl-2">
+                        <div onclick="jumpToSection('section2-1')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景1：三年后
+                        </div>
+                        <div onclick="jumpToSection('section2-2')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-xs mb-1 text-gray-600">
+                            场景2：雨巷
+                        </div>
+                    </div>
+                    <div onclick="jumpToSection('section3')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>第三幕：抉择
+                    </div>
+                    <div onclick="jumpToSection('section4')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>尾声
+                    </div>
+                    <div onclick="jumpToSection('section5')" class="cursor-pointer hover:bg-gray-100 px-3 py-2 rounded-lg text-sm mb-1 text-gray-700">
+                        <i class="fa fa-file-text-o mr-2 text-gray-400"></i>人物设定表
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto bg-white">
+                <div class="max-w-3xl mx-auto">
+                    <textarea id="scriptEditorBox" class="w-full h-full min-h-[70vh] border-none outline-none resize-none p-6 leading-8 text-gray-700 text-base font-mono" style="font-family: 'SFMono-Regular', Consolas, monaco;">
+【时光咖啡屋】
+
+---
+
+[id="section0"]
+『封面页』
+
+《时光咖啡屋》
+一个关于遇见和离别的现代都市爱情故事
+字数：12,850
+初稿完成：2025.11.15
+
+---
+
+[id="section1"]
+『第一幕：初遇』
+
+[id="section1-1"]
+【场景1：深夜咖啡屋】
+
+（11月某晚，23:47，城市飘着细雪）
+
+| 镜号 | 景别 | 内容 | 台词 | 时长 |
+|------|------|------|------|------|
+| 1 | 远 → 近 | 深夜冷清的街道，只有街角咖啡屋的窗户透出暖黄色的光，镜头推进 |  | 5s |
+| 2 | 中 | 女主林小夏搓着冻红的手推开门，风铃轻响，她裹紧驼色大衣走到靠窗固定位置坐下 | 林小夏：（哈着白气搓手）老板，照旧，热拿铁。| 8s |
+| 3 | 特写 | 咖啡店主阿明温润的手在咖啡机蒸汽中熟练操作 | 阿明：（微笑）就知道你会来，已温好杯。| 6s |
+| 4 | 近景 | 林小夏打开笔记本电脑，屏幕显示「未完稿：时光列车」，她揉了揉眉心 | （内心OS）： Deadline只剩三天了，还是写不出结尾... | 7s |
+| 5 | 中→特写 | 一杯冒着奶泡的拿铁轻轻放在她桌前，咖啡拉花是一片叶子的形状 | | 3s |
+
+[id="section1-2"]
+【场景2：凌晨地铁站】
+
+（凌晨00:52，地铁即将停运，只有寥寥几个夜归人）
+
+...（剧本编辑可继续续写所有内容）...
+                    </textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
