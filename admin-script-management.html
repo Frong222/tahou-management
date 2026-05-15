@@ -240,10 +240,16 @@
                     <h1 class="text-2xl font-bold mb-1">剧本管理</h1>
                     <p class="text-gray-600">管理AI生成工具使用的剧本，支持剧本的添加、配置和状态管理</p>
                 </div>
-                <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover flex items-center" onclick="openAddScriptModal()">
-                    <i class="fa fa-plus mr-2"></i>
-                    添加剧本
-                </button>
+                <div class="flex space-x-3">
+                    <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition-all-300 btn-hover flex items-center" onclick="openCategoryManagementSidebar()">
+                        <i class="fa fa-tags mr-2"></i>
+                        分类管理
+                    </button>
+                    <button class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover flex items-center" onclick="openAddScriptModal()">
+                        <i class="fa fa-plus mr-2"></i>
+                        添加剧本
+                    </button>
+                </div>
             </div>
             
             <!-- 搜索和筛选区域 -->
@@ -796,6 +802,31 @@
     
     <!-- 遮罩层 -->
     <div id="scriptDetailsOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    
+    <!-- 剧本分类管理侧边栏 -->
+    <div id="categoryManagementSidebar" class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="h-full flex flex-col">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold">剧本分类管理</h3>
+                <button onclick="closeCategoryManagementSidebar()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex space-x-2">
+                    <input type="text" id="newCategoryName" placeholder="输入新分类名称" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <button onclick="addCategory()" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary/90 transition-all-300 btn-hover">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4" id="categoryListContainer">
+                <div class="space-y-3" id="categoryList">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="categoryManagementOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
     
     <!-- JavaScript -->
     <script>
@@ -1359,6 +1390,181 @@
                 }
             }
         });
+        
+        var scriptCategories = [
+            { id: 1, name: '现代爱情', count: 15, enabled: true },
+            { id: 2, name: '悬疑推理', count: 8, enabled: true },
+            { id: 3, name: '科幻冒险', count: 12, enabled: false },
+            { id: 4, name: '年代历史', count: 6, enabled: true },
+            { id: 5, name: '其他', count: 3, enabled: true }
+        ];
+        var editingCategoryId = null;
+        
+        function openCategoryManagementSidebar() {
+            document.getElementById('categoryManagementSidebar').classList.remove('translate-x-full');
+            document.getElementById('categoryManagementOverlay').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            renderCategoryList();
+        }
+        
+        function closeCategoryManagementSidebar() {
+            document.getElementById('categoryManagementSidebar').classList.add('translate-x-full');
+            document.getElementById('categoryManagementOverlay').classList.add('hidden');
+            document.body.style.overflow = '';
+            editingCategoryId = null;
+            document.getElementById('newCategoryName').value = '';
+        }
+        
+        document.getElementById('categoryManagementOverlay').addEventListener('click', closeCategoryManagementSidebar);
+        
+        function toggleCategoryStatus(categoryId) {
+            var category = scriptCategories.find(function(c) { return c.id === categoryId; });
+            if (category) {
+                category.enabled = !category.enabled;
+            }
+            renderCategoryList();
+        }
+        
+        function renderCategoryList() {
+            var categoryList = document.getElementById('categoryList');
+            categoryList.innerHTML = '';
+            
+            scriptCategories.forEach(function(category) {
+                var categoryItem = document.createElement('div');
+                categoryItem.className = 'bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors';
+                categoryItem.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center flex-1">
+                            <div class="flex-1">
+                                ${editingCategoryId === category.id ? `
+                                    <input type="text" id="editCategoryInput_${category.id}" value="${category.name}" 
+                                        class="w-full border border-primary rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                                        onkeypress="if(event.key==='Enter')saveCategoryEdit(${category.id})">
+                                ` : `
+                                    <div class="font-medium ${category.enabled ? 'text-gray-800' : 'text-gray-400'}">${category.name}</div>
+                                    <div class="text-xs text-gray-500 mt-1">包含 ${category.count} 个剧本</div>
+                                `}
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 ml-3">
+                            ${editingCategoryId === category.id ? `
+                                <button onclick="saveCategoryEdit(${category.id})" class="text-green-600 hover:text-green-800 p-2" title="保存">
+                                    <i class="fa fa-check"></i>
+                                </button>
+                                <button onclick="cancelCategoryEdit()" class="text-gray-500 hover:text-gray-700 p-2" title="取消">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            ` : `
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" ${category.enabled ? 'checked' : ''} onchange="toggleCategoryStatus(${category.id})">
+                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+                                <button onclick="startEditCategory(${category.id})" class="text-primary hover:text-primary/80 p-2" title="编辑">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button onclick="deleteCategory(${category.id})" class="text-red-500 hover:text-red-700 p-2" title="删除">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                categoryList.appendChild(categoryItem);
+            });
+            
+            if (editingCategoryId) {
+                setTimeout(function() {
+                    var input = document.getElementById('editCategoryInput_' + editingCategoryId);
+                    if (input) input.focus();
+                }, 100);
+            }
+        }
+        
+        function addCategory() {
+            var input = document.getElementById('newCategoryName');
+            var name = input.value.trim();
+            
+            if (!name) {
+                alert('请输入分类名称');
+                input.focus();
+                return;
+            }
+            
+            var exists = scriptCategories.some(function(cat) { 
+                return cat.name === name; 
+            });
+            if (exists) {
+                alert('该分类名称已存在');
+                return;
+            }
+            
+            var newId = Math.max.apply(Math, scriptCategories.map(function(c) { return c.id; })) + 1;
+            
+            scriptCategories.push({
+                id: newId,
+                name: name,
+                count: 0,
+                enabled: true
+            });
+            
+            input.value = '';
+            renderCategoryList();
+        }
+        
+        function startEditCategory(categoryId) {
+            editingCategoryId = categoryId;
+            renderCategoryList();
+        }
+        
+        function cancelCategoryEdit() {
+            editingCategoryId = null;
+            renderCategoryList();
+        }
+        
+        function saveCategoryEdit(categoryId) {
+            var input = document.getElementById('editCategoryInput_' + categoryId);
+            var newName = input.value.trim();
+            
+            if (!newName) {
+                alert('分类名称不能为空');
+                return;
+            }
+            
+            var exists = scriptCategories.some(function(cat) { 
+                return cat.id !== categoryId && cat.name === newName; 
+            });
+            if (exists) {
+                alert('该分类名称已存在');
+                return;
+            }
+            
+            var category = scriptCategories.find(function(c) { return c.id === categoryId; });
+            if (category) {
+                category.name = newName;
+            }
+            
+            editingCategoryId = null;
+            renderCategoryList();
+        }
+        
+        function deleteCategory(categoryId) {
+            var category = scriptCategories.find(function(c) { return c.id === categoryId; });
+            
+            if (category && category.count > 0) {
+                if (!confirm('删除分类将取消其下所有剧本的分类关联，是否继续删除？')) {
+                    return;
+                }
+            } else {
+                if (!confirm('确定要删除该分类吗？')) {
+                    return;
+                }
+            }
+            
+            scriptCategories = scriptCategories.filter(function(cat) { 
+                return cat.id !== categoryId; 
+            });
+            renderCategoryList();
+        }
     </script>
     <!-- 添加剧本标签框 -->
     <div id="addScriptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
